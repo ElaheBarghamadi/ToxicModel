@@ -45,6 +45,11 @@ def home(request):
         'train_total': v3.get('train_size_v2', stats['total']),
         'stats': stats,
     }
+    for row in ctx['rows']:
+        if 'F1' in row:
+            row['f1_pct'] = round(row['F1'] * 100, 1)
+            row['ci_lo_pct'] = round(row['F1_ci95'][0] * 100, 1)
+            row['ci_span_pct'] = round((row['F1_ci95'][1] - row['F1_ci95'][0]) * 100, 1)
     return render(request, 'core/home.html', ctx)
 
 
@@ -68,7 +73,7 @@ def single_test(request):
 # ---------------- تست با فایل ----------------
 @csrf_exempt
 def batch_test(request):
-    ctx = {}
+    ctx = {'cfg': model_utils.model_config()}
     if request.method == 'POST' and request.FILES.get('file'):
         f = request.FILES['file']
         try:

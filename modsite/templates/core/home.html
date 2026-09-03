@@ -2,20 +2,48 @@
 {% block title %}داشبورد — ناظر{% endblock %}
 {% block nav_home %}active{% endblock %}
 {% block content %}
-<h1>📊 داشبورد مدل <span style="color:var(--mut);font-size:14px">({{ cfg.version }} · {{ cfg.algo }})</span></h1>
-<p class="sub">نسخه ۳ — هر دو مدل رگرسیون لجستیک · آستانه‌ها فقط روی validation انتخاب شده‌اند · فاصله اطمینان ۹۵٪ بوت‌استرپ</p>
+<h1>📊 داشبورد مدل</h1>
+<p class="sub">نسخه {{ cfg.version }} · {{ cfg.algo }} — نتایج روی ۵ مجموعه آزمون دست‌نخورده، آستانه‌ها فقط از validation</p>
 
-<div class="grid g4">
-  <div class="kpi"><b>{{ train_total|default:'—' }}</b><span>نمونه آموزش v2 (۵ منبع)</span></div>
-  <div class="kpi"><b>{{ cfg.review_threshold }}</b><span>آستانه بازبینی (از validation)</span></div>
-  <div class="kpi"><b>v1≥{{ cfg.block_v1 }} ∧ v2≥{{ cfg.block_v2 }}</b><span>قاعده بلاک (از validation)</span></div>
-  <div class="kpi"><b>~۲ms</b><span>زمان هر کامنت</span></div>
+<div class="grid g4 stagger">
+  <div class="kpi"><b data-count="{{ train_total }}">0</b><span>نمونه آموزش (۵ منبع)</span></div>
+  <div class="kpi"><b>{{ cfg.review_threshold }}</b><span>آستانه بازبینی (validation)</span></div>
+  <div class="kpi"><b>v1≥{{ cfg.block_v1 }} ∧ v2≥{{ cfg.block_v2 }}</b><span>قاعده بلاک (validation)</span></div>
+  <div class="kpi"><b>~۲<small style="font-size:13px">ms</small></b><span>زمان هر کامنت</span></div>
 </div>
 
-<h2>🏆 نتایج نسخه ۳ روی ۵ مجموعه آزمون دست‌نخورده</h2>
+<h2>🏆 F1 هر حوزه — با فاصله اطمینان ۹۵٪</h2>
+<div class="card">
+<div class="stagger">
+{% for r in rows %}
+{% with f1=r.F1 %}
+  <div style="margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+      <span><b>{{ r.src_fa }}</b> <span style="color:var(--mut);font-size:11px">({{ r.name }} · n={{ r.n }})</span></span>
+      <span class="code">{{ r.F1 }} [{{ r.F1_ci95.0 }}–{{ r.F1_ci95.1 }}]</span>
+    </div>
+    <div style="position:relative;height:10px;background:rgba(15,21,36,.9);border-radius:99px">
+      <i data-w="{{ r.f1_pct }}" style="display:block;height:100%;width:0;border-radius:99px;
+        background:linear-gradient(90deg,#60a5fa,#a78bfa);transition:width 1s cubic-bezier(.2,.7,.3,1)"></i>
+      <!-- بازه CI به‌صورت نوار روشن‌تر -->
+      <i style="position:absolute;top:0;height:100%;border-radius:99px;opacity:.35;
+        right:{{ r.ci_lo_pct }}%;width:{{ r.ci_span_pct }}%;background:#a78bfa"></i>
+      <!-- نشانگر F1 -->
+      <span style="position:absolute;top:-3px;width:2px;height:16px;background:#fff;border-radius:2px;
+        right:calc({{ r.f1_pct }}% - 1px);box-shadow:0 0 8px rgba(255,255,255,.7)"></span>
+    </div>
+  </div>
+{% endwith %}
+{% endfor %}
+</div>
+<p style="font-size:11.5px;color:var(--mut);margin-top:6px">
+خط سفید = F1 · نوار کم‌رنگ = بازه اطمینان ۹۵٪ (بوت‌استرپ) — بازه پهن‌تر یعنی برآورد کم‌اطمینان‌تر</p>
+</div>
+
+<h2>📋 جدول کامل نتایج</h2>
 <div class="card">
 <table>
-<tr><th>مجموعه آزمون</th><th>دامنه</th><th>تعداد</th><th>دقت</th><th>بازیابی</th><th>F1</th><th>فاصله اطمینان ۹۵٪</th><th>بلاک: دقت/بازیابی</th></tr>
+<tr><th>مجموعه آزمون</th><th>دامنه</th><th>تعداد</th><th>دقت</th><th>بازیابی</th><th>F1</th><th>CI ۹۵٪</th><th>بلاک: دقت/بازیابی</th></tr>
 {% for r in rows %}
 <tr>
   <td><b>{{ r.src_fa }}</b></td><td style="color:var(--mut)">{{ r.name }}</td><td>{{ r.n }}</td>
@@ -26,33 +54,31 @@
 </tr>
 {% endfor %}
 </table>
-<p style="font-size:12px;color:var(--mut);margin-top:8px">
-آستانه‌ها (بازبینی و بلاک) روی یک validation جداگانه ۸ هزارتایی از داده آموزش انتخاب شده‌اند و تست‌ها فقط یک‌بار خوانده شده‌اند — برخلاف نسخه‌های قبل که آستانه روی تست تیون می‌شد.</p>
 </div>
 
 <h2>🧭 قاعده تصمیم‌گیری</h2>
-<div class="card">
-<div class="exp"><b>✅ ok — انتشار فوری:</b> احتمال نامناسب‌بودن (v2) زیر {{ cfg.review_threshold }} است.<div class="use">حجم عمده کامنت‌های سالم — بدون اصطکاک.</div></div>
+<div class="card stagger">
+<div class="exp"><b>✅ ok — انتشار فوری:</b> احتمال v2 زیر {{ cfg.review_threshold }} است.<div class="use">حجم عمده کامنت‌های سالم — بدون اصطکاک.</div></div>
 <div class="exp"><b>🔍 review — صف بازبینی:</b> v2 ≥ {{ cfg.review_threshold }} ولی شرط بلاک برقرار نیست.<div class="use">پوشش بالای کل محتوای نامناسب؛ تصمیم نهایی با انسان.</div></div>
-<div class="exp"><b>🚫 block — مسدودسازی خودکار:</b> مدل فحش v1 ≥ {{ cfg.block_v1 }} <u>و</u> v2 ≥ {{ cfg.block_v2 }} (هر دو مطمئن).<div class="use">دقت این قاعده در validation: ۹۸٫۹٪ — روی تست‌های دست‌نخورده بین ۸۸٪ تا ۱۰۰٪ (صدق گزارش شده).</div></div>
+<div class="exp"><b>🚫 block — مسدودسازی خودکار:</b> v1 ≥ {{ cfg.block_v1 }} <u>و</u> v2 ≥ {{ cfg.block_v2 }} (هر دو مطمئن).<div class="use">دقت روی validation: ۹۸٫۹٪ — روی تست‌های دست‌نخورده ۸۸ تا ۱۰۰٪.</div></div>
 </div>
 
 <h2>📚 متریک‌ها یعنی چه؟</h2>
-<div class="card">
-<div class="exp"><b>دقت (Precision):</b> از هر ۱۰۰ کامنتی که مدل نامناسب اعلام کرد، چند تا واقعاً نامناسب بودند؟ — بالاتر = اتهام بی‌گناه کمتر.<div class="use">مهم برای: حذف‌نکردن اشتباه نظر کاربران عادی.</div></div>
-<div class="exp"><b>بازیابی (Recall):</b> از هر ۱۰۰ کامنت واقعاً نامناسب، چند تا پیدا شد؟ — بالاتر = فرار کمتر توهین.<div class="use">مهم برای: امنیت جامعه کاربری.</div></div>
-<div class="exp"><b>F1:</b> میانگین هماهنگ دقت و بازیابی؛ ضعف یکی، F1 را پایین می‌کشد.<div class="use">معیار کلی مقایسه.</div></div>
-<div class="exp"><b>فاصله اطمینان ۹۵٪ (CI):</b> بازه‌ای که F1 واقعی با ۹۵٪ احتمال درون آن است. بازه پهن = داده تست کم/نامطمئن. مثلاً F1=۰٫۸۶ با بازه [۰٫۸۴، ۰٫۸۹] قابل‌اتکاست؛ بدون CI، عدد خام گمراه‌کننده است.</div>
-<div class="exp"><b>FP / FN:</b> FP = کامنت سالمِ متهم‌شده؛ FN = توهینِ پنهان‌مانده. این دو با هم معامله می‌شوند و آستانه نقطه تعادل را جابه‌جا می‌کند.</div>
+<div class="card stagger">
+<div class="exp"><b>دقت (Precision):</b> از هر ۱۰۰ کامنتی که مدل نامناسب گفت، چند‌تا واقعاً نامناسب بودند؟<div class="use">بالاتر = اتهام بی‌گناه کمتر.</div></div>
+<div class="exp"><b>بازیابی (Recall):</b> از هر ۱۰۰ کامنت واقعاً نامناسب، چند تا پیدا شد؟<div class="use">بالاتر = فرار کمتر توهین.</div></div>
+<div class="exp"><b>F1:</b> میانگین هماهنگ دقت و بازیابی؛ ضعف یکی، F1 را پایین می‌کشد.</div>
+<div class="exp"><b>فاصله اطمینان ۹۵٪ (CI):</b> بازه‌ای که F1 واقعی با ۹۵٪ احتمال درون آن است — بازه پهن یعنی داده تست کم. عدد خام بدون CI گمراه‌کننده است.</div>
+<div class="exp"><b>FP / FN:</b> FP = کامنت سالمِ متهم؛ FN = توهینِ پنهان. با جابه‌جایی آستانه، این دو معامله می‌شوند.</div>
 </div>
 
-<h2>🧠 معماری</h2>
+<h2>🧠 معماری و ایمنی</h2>
 <div class="card">
 <p style="font-size:13.5px">
-<b>v2 (model.joblib):</b> LogisticRegression (C=4) روی ۱۰۹٬۷۴۷ نمونه از ۵ منبع — فحش و توهین ملایم؛ تصمیم‌گیرنده review.<br><br>
-<b>v1 (model_v1.joblib):</b> LogisticRegression (C=10) فقط روی توییت‌های فحش — قفل دوم برای block.<br><br>
-<b>ویژگی‌ها:</b> char TF-IDF (2-5گرم) روی متن + نسخه بدون فاصله (ضد تله‌گذاری «ک ی ر») ∪ word TF-IDF (1-2گرم).<br><br>
-<b>ایمنی خط آموزش:</b> داده آپلودی در برابر تست‌ها پالایش می‌شود · نسخه قبلی بایگانی و قابل بازگردانی · آموزشِ معیوب خودکار رد می‌شود.
+<b>v2</b> — LogisticRegression (C=4) روی ۱۰۹٬۷۴۷ نمونه ۵ منبع؛ فحش + توهین ملایم؛ تصمیم‌گیرنده review.<br>
+<b>v1</b> — LogisticRegression (C=10) فقط روی توییت‌های فحش؛ قفل دوم block.<br>
+<b>ویژگی‌ها</b> — char TF-IDF (2-5) روی متن + نسخهٔ بدون فاصله (ضد «ک ی ر») ∪ word TF-IDF (1-2).<br>
+<b>ایمنی خط آموزش</b> — پالایش نشت داده آپلودی · بایگانی + بازگردانی · رد خودکار آموزش معیوب.
 </p>
 </div>
 {% endblock %}

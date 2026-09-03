@@ -3,13 +3,12 @@
 {% block nav_batch %}active{% endblock %}
 {% block content %}
 <h1>📁 تست با فایل</h1>
-<p class="sub">فایل CSV یا Excel را با ستون <span class="code">text</span> آپلود کنید — اگر ستون <span class="code">label</span> هم داشته باشد، نمره‌ها محاسبه می‌شود</p>
+<p class="sub">CSV / Excel با ستون <span class="code">text</span> — اگر ستون <span class="code">label</span> هم باشد، نمره‌ها محاسبه می‌شود</p>
 
 <div class="card">
-<form method="post" enctype="multipart/form-data">
-  <input type="file" name="file" accept=".csv,.xlsx,.xls,.tsv" required
-         style="background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px;width:100%;color:var(--tx)">
-  <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+<form method="post" enctype="multipart/form-data" id="upForm">
+  <input type="file" name="file" id="file" accept=".csv,.xlsx,.xls,.tsv" required>
+  <div style="margin-top:13px;display:flex;gap:10px;flex-wrap:wrap">
     <button class="btn">پردازش و ارزیابی 📊</button>
     <a class="btn gray" href="/batch/sample/">⬇️ نمونه آماده لیبل‌دار</a>
   </div>
@@ -19,38 +18,46 @@
 {% if error %}<div class="warn">{{ error }}</div>{% endif %}
 
 {% if metrics %}
-<h2>🧮 نمره‌های مدل روی این فایل ({{ metrics.n }} نمونه لیبل‌دار)</h2>
-<div class="grid g4">
-  <div class="kpi"><b>{{ metrics.accuracy|floatformat:3 }}</b><span>دقت کلی (Accuracy)</span></div>
-  <div class="kpi"><b>{{ metrics.precision|floatformat:3 }}</b><span>دقت (Precision)</span></div>
-  <div class="kpi"><b>{{ metrics.recall|floatformat:3 }}</b><span>بازیابی (Recall)</span></div>
-  <div class="kpi"><b>{{ metrics.f1|floatformat:3 }}</b><span>F1</span></div>
+<h2>🧮 نمره‌ها <span style="color:var(--mut);font-size:13px;font-weight:400">({{ metrics.n }} نمونه لیبل‌دار)</span></h2>
+<div class="grid g4 stagger">
+  <div class="kpi"><b data-count="{{ metrics.accuracy }}" data-dec="3">0</b><span>دقت کلی (Accuracy)</span></div>
+  <div class="kpi"><b data-count="{{ metrics.precision }}" data-dec="3">0</b><span>دقت (Precision)</span></div>
+  <div class="kpi"><b data-count="{{ metrics.recall }}" data-dec="3">0</b><span>بازیابی (Recall)</span></div>
+  <div class="kpi"><b data-count="{{ metrics.f1 }}" data-dec="3">0</b><span>F1</span></div>
 </div>
-<div class="card" style="margin-top:12px">
-<table>
-<tr><th></th><th>پیش‌بینی نامناسب</th><th>پیش‌بینی سالم</th></tr>
-<tr><td><b>واقعاً نامناسب</b></td><td style="color:var(--ok)">✔ {{ metrics.tp }}</td><td style="color:var(--blk)">FN: {{ metrics.fn }} (از دست رفت)</td></tr>
-<tr><td><b>واقعاً سالم</b></td><td style="color:var(--rev)">FP: {{ metrics.fp }} (به‌اشتباه متهم)</td><td style="color:var(--ok)">✔ {{ metrics.tn }}</td></tr>
-</table>
-<p style="font-size:12px;color:var(--mut);margin-top:8px">«پیش‌بینی نامناسب» یعنی تصمیم review یا block (آستانه ۰٫۵ مدل v2).</p>
+
+<div class="grid g2" style="margin-top:14px">
+  <div class="card" style="margin:0">
+    <h2 style="margin-top:0">ماتریس درهم‌ریختگی</h2>
+    <table>
+      <tr><th></th><th>پیش‌بینی نامناسب</th><th>پیش‌بینی سالم</th></tr>
+      <tr><td><b>واقعاً نامناسب</b></td><td style="color:var(--ok)">✔ {{ metrics.tp }}</td><td style="color:var(--blk)">FN {{ metrics.fn }}</td></tr>
+      <tr><td><b>واقعاً سالم</b></td><td style="color:var(--rev)">FP {{ metrics.fp }}</td><td style="color:var(--ok)">✔ {{ metrics.tn }}</td></tr>
+    </table>
+  </div>
+  <div class="card" style="margin:0">
+    <h2 style="margin-top:0">توزیع تصمیم‌ها</h2>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <span class="badge b-ok" style="font-size:14px">✅ مجاز: {{ decision_counts.ok }}</span>
+      <span class="badge b-review" style="font-size:14px">🔍 بازبینی: {{ decision_counts.review }}</span>
+      <span class="badge b-block" style="font-size:14px">🚫 بلاک: {{ decision_counts.block }}</span>
+    </div>
+    {% if download_ready %}
+    <div style="margin-top:14px"><a class="btn gray" href="/batch/download/batch_results.csv">⬇️ دانلود نتایج کامل (CSV)</a></div>
+    {% endif %}
+    <p style="font-size:11.5px;color:var(--mut);margin-top:12px">«پیش‌بینی نامناسب» = تصمیم review یا block (آستانه {{ cfg.review_threshold }} از validation)</p>
+  </div>
 </div>
 {% endif %}
 
 {% if table %}
-<h2>🧾 پیش‌بینی‌ها{% if truncated %} (۲۰۰ نمونه اول از {{ n_total }}){% else %} ({{ n_total }}){% endif %}</h2>
+<h2>🧾 پیش‌بینی‌ها{% if truncated %} <span style="color:var(--mut);font-size:13px">(۲۰۰ اول از {{ n_total }})</span>{% else %} <span style="color:var(--mut);font-size:13px">({{ n_total }})</span>{% endif %}</h2>
 <div class="card">
-<p style="font-size:13px;margin-bottom:10px">
-توزیع تصمیم‌ها:
-<span class="badge b-ok">مجاز: {{ decision_counts.ok }}</span>
-<span class="badge b-review">بازبینی: {{ decision_counts.review }}</span>
-<span class="badge b-block">بلاک: {{ decision_counts.block }}</span>
-{% if download_ready %} · <a href="/batch/download/batch_results.csv">⬇️ دانلود نتایج کامل (CSV)</a>{% endif %}
-</p>
 <table>
-<tr><th>کامنت</th><th>احتمال</th><th>تصمیم</th>{% if has_label %}<th>لیبل واقعی</th><th>درست؟</th>{% endif %}</tr>
+<tr><th>کامنت</th><th>احتمال</th><th>تصمیم</th>{% if has_label %}<th>لیبل</th><th>درست؟</th>{% endif %}</tr>
 {% for r in table %}
 <tr>
-  <td style="max-width:420px">{{ r.text }}</td>
+  <td style="max-width:430px">{{ r.text }}</td>
   <td class="code">{{ r.prob|floatformat:2 }}</td>
   <td><span class="badge b-{{ r.css }}">{{ r.icon }}</span></td>
   {% if has_label %}
@@ -62,4 +69,10 @@
 </table>
 </div>
 {% endif %}
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('upForm').addEventListener('submit',()=>toast('فایل در حال پردازش است…','⚙️',2500));
+{% if metrics %}setTimeout(()=>toast('ارزیابی انجام شد — F1={{ metrics.f1 }}','🎯'),600);{% endif %}
+</script>
 {% endblock %}
