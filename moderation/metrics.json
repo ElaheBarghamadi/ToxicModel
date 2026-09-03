@@ -1,0 +1,340 @@
+{
+  "best_model": "LinearSVC C=0.5",
+  "cv_results": [
+    {
+      "name": "LogReg C=1.0",
+      "cv_f1_abusive": 0.9524317395091266,
+      "cv_std": 0.004653086675871432,
+      "fit_seconds": 17.3
+    },
+    {
+      "name": "LogReg C=3.0",
+      "cv_f1_abusive": 0.9663528781198546,
+      "cv_std": 0.0012235036724964046,
+      "fit_seconds": 17.4
+    },
+    {
+      "name": "LogReg C=10.0",
+      "cv_f1_abusive": 0.9704389817929551,
+      "cv_std": 0.0024534384342825523,
+      "fit_seconds": 17.2
+    },
+    {
+      "name": "LinearSVC C=0.5",
+      "cv_f1_abusive": 0.975913114404554,
+      "cv_std": 0.0027675760521121027,
+      "fit_seconds": 14.7
+    },
+    {
+      "name": "LinearSVC C=2.0",
+      "cv_f1_abusive": 0.974167396001798,
+      "cv_std": 0.0033662579748959436,
+      "fit_seconds": 16.2
+    }
+  ],
+  "thresholds": {
+    "default": 0.5,
+    "balanced_f1": 0.5097431963406982,
+    "high_precision_0.97": 0.3746749209548484
+  },
+  "test_eval": {
+    "default": {
+      "threshold": 0.5,
+      "abusive_precision": 0.9915,
+      "abusive_recall": 0.967,
+      "abusive_f1": 0.9791,
+      "accuracy": 0.9957,
+      "confusion_TP_FP_FN_TN": [
+        469,
+        4,
+        16,
+        4209
+      ]
+    },
+    "balanced_f1": {
+      "threshold": 0.5097,
+      "abusive_precision": 0.9915,
+      "abusive_recall": 0.967,
+      "abusive_f1": 0.9791,
+      "accuracy": 0.9957,
+      "confusion_TP_FP_FN_TN": [
+        469,
+        4,
+        16,
+        4209
+      ]
+    },
+    "high_precision_0.97": {
+      "threshold": 0.3747,
+      "abusive_precision": 0.9854,
+      "abusive_recall": 0.9773,
+      "abusive_f1": 0.9814,
+      "accuracy": 0.9962,
+      "confusion_TP_FP_FN_TN": [
+        474,
+        7,
+        11,
+        4206
+      ]
+    }
+  },
+  "demo": [
+    {
+      "group": "civil",
+      "text": "عالی بود ممنون از مدیریت سایت",
+      "prob_abusive": 0.001,
+      "flagged_at_0.5": false
+    },
+    {
+      "group": "civil",
+      "text": "نویسنده محترم، با آمار این مقاله مخالفم و دلایل علمی‌اش را نوشتم",
+      "prob_abusive": 0.03,
+      "flagged_at_0.5": false
+    },
+    {
+      "group": "civil",
+      "text": "ارسال کالا سه روز تأخیر داشت و پشتیبانی جواب نداد، خیلی ناراضی‌ام",
+      "prob_abusive": 0.741,
+      "flagged_at_0.5": true
+    },
+    {
+      "group": "civil",
+      "text": "قیمت مناسبه ولی کیفیت دوام نداره",
+      "prob_abusive": 0.0,
+      "flagged_at_0.5": false
+    },
+    {
+      "group": "civil",
+      "text": "چطور می‌تونم سفارشم رو لغو کنم؟",
+      "prob_abusive": 0.0,
+      "flagged_at_0.5": false
+    },
+    {
+      "group": "civil",
+      "text": "به نظرم این سیاست جدید اثربخش نخواهد بود",
+      "prob_abusive": 0.003,
+      "flagged_at_0.5": false
+    },
+    {
+      "group": "abusive",
+      "text": "مدیریت این سایت یه عرفه",
+      "prob_abusive": 0.01,
+      "flagged_at_0.5": false
+    },
+    {
+      "group": "abusive",
+      "text": "نویسنده‌ش خودش یه الاغ بی‌سواده",
+      "prob_abusive": 0.112,
+      "flagged_at_0.5": false
+    },
+    {
+      "group": "abusive",
+      "text": "همه کارمندای این سایت دزد و کلاهبردارن",
+      "prob_abusive": 0.008,
+      "flagged_at_0.5": false
+    },
+    {
+      "group": "abusive",
+      "text": "این محصول گه بود، نخرید",
+      "prob_abusive": 1.0,
+      "flagged_at_0.5": true
+    },
+    {
+      "group": "tricky",
+      "text": "ک ی ر تو این سایت خراب شده",
+      "prob_abusive": 0.796,
+      "flagged_at_0.5": true
+    },
+    {
+      "group": "tricky",
+      "text": "بریمmmmm فاک این وضعیت",
+      "prob_abusive": 1.0,
+      "flagged_at_0.5": true
+    }
+  ],
+  "inference_1000_comments_seconds": 0.06,
+  "data": {
+    "train": 26616,
+    "test": 4698,
+    "train_abusive": 2748,
+    "test_abusive": 485
+  },
+  "threshold_table": {
+    "0.3": {
+      "precision": 0.9834,
+      "recall": 0.9794,
+      "f1": 0.9814,
+      "fp": 8,
+      "fn": 10
+    },
+    "0.5": {
+      "precision": 0.9915,
+      "recall": 0.967,
+      "f1": 0.9791,
+      "fp": 4,
+      "fn": 16
+    },
+    "0.7": {
+      "precision": 0.9915,
+      "recall": 0.9567,
+      "f1": 0.9738,
+      "fp": 4,
+      "fn": 21
+    },
+    "0.9": {
+      "precision": 0.9978,
+      "recall": 0.9175,
+      "f1": 0.956,
+      "fp": 1,
+      "fn": 40
+    },
+    "0.95": {
+      "precision": 1.0,
+      "recall": 0.901,
+      "f1": 0.9479,
+      "fp": 0,
+      "fn": 48
+    }
+  },
+  "v2": {
+    "best_C": 4.0,
+    "cv_f1_sample": 0.868,
+    "train_size": 109747,
+    "per_test": {
+      "tweets": {
+        "v1": {
+          "P": 0.992,
+          "R": 0.965,
+          "F1": 0.978
+        },
+        "v2": {
+          "P": 0.765,
+          "R": 0.905,
+          "F1": 0.829
+        },
+        "n": 4698,
+        "pos": 485
+      },
+      "naseza": {
+        "v1": {
+          "P": 0.681,
+          "R": 0.646,
+          "F1": 0.663
+        },
+        "v2": {
+          "P": 0.861,
+          "R": 0.891,
+          "F1": 0.876
+        },
+        "n": 857,
+        "pos": 376
+      },
+      "pars_offensive": {
+        "v1": {
+          "P": 0.546,
+          "R": 0.515,
+          "F1": 0.53
+        },
+        "v2": {
+          "P": 0.69,
+          "R": 0.912,
+          "F1": 0.786
+        },
+        "n": 1262,
+        "pos": 464
+      },
+      "phate": {
+        "v1": {
+          "P": 0.522,
+          "R": 0.782,
+          "F1": 0.626
+        },
+        "v2": {
+          "P": 0.758,
+          "R": 0.758,
+          "F1": 0.758
+        },
+        "n": 1058,
+        "pos": 463
+      },
+      "phicad": {
+        "v1": {
+          "P": 0.838,
+          "R": 0.475,
+          "F1": 0.606
+        },
+        "v2": {
+          "P": 0.946,
+          "R": 0.901,
+          "F1": 0.923
+        },
+        "n": 11642,
+        "pos": 7140
+      }
+    },
+    "demo": {
+      "civil": [
+        {
+          "text": "عالی بود ممنون از مدیریت سایت",
+          "v1": 0.001,
+          "v2": 0.001
+        },
+        {
+          "text": "نویسنده محترم، با آمار این مقاله مخالفم",
+          "v1": 0.0,
+          "v2": 0.006
+        },
+        {
+          "text": "ارسال کالا سه روز تأخیر داشت و پشتیبانی جواب نداد، ناراضی‌ام",
+          "v1": 0.882,
+          "v2": 0.118
+        },
+        {
+          "text": "چطور می‌تونم سفارشم رو لغو کنم؟",
+          "v1": 0.0,
+          "v2": 0.109
+        }
+      ],
+      "mild_insult_v1_missed": [
+        {
+          "text": "نویسنده‌ش خودش یه الاغ بی‌سواده",
+          "v1": 0.025,
+          "v2": 0.779
+        },
+        {
+          "text": "همه کارمندای این سایت دزد و کلاهبردارن",
+          "v1": 0.008,
+          "v2": 0.968
+        },
+        {
+          "text": "مدیریت این سایت یه عرفه",
+          "v1": 0.01,
+          "v2": 0.659
+        },
+        {
+          "text": "بی غیرت هر کی این خبر رو نوشته",
+          "v1": 0.999,
+          "v2": 0.899
+        },
+        {
+          "text": "چی می‌گی دیوونه؟",
+          "v1": 0.005,
+          "v2": 0.157
+        }
+      ],
+      "profanity": [
+        {
+          "text": "بریم کیر تو این سایت خراب شده",
+          "v1": 1.0,
+          "v2": 1.0
+        },
+        {
+          "text": "ک ی ر تو شونصد تا تیکت باز کردم",
+          "v1": 0.999,
+          "v2": 0.967
+        }
+      ]
+    },
+    "inference_2000_sec": 0.065
+  }
+}

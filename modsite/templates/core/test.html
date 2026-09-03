@@ -1,0 +1,35 @@
+{% extends "core/base.html" %}
+{% block title %}تست تک‌کامنت — ناظر{% endblock %}
+{% block nav_test %}active{% endblock %}
+{% block content %}
+<h1>✏️ تست تک‌کامنت</h1>
+<p class="sub">یک یا چند کامنت بنویسید (هر خط یک کامنت) — خروجی: احتمال نامناسب‌بودن + تصمیم نهایی</p>
+
+<div class="card">
+<form method="post">
+  <textarea name="text" placeholder="مثلاً: نظرت درباره این مقاله چیه؟&#10;یا: نویسنده‌ش خودش یه الاغ بی‌سواده">{{ text }}</textarea>
+  <div style="margin-top:12px"><button class="btn">بررسی کن 🚀</button></div>
+</form>
+</div>
+
+{% if results %}
+<h2>نتایج ({{ results|length }} کامنت)</h2>
+{% for r in results %}
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+    <div style="max-width:70%">
+      <div style="font-size:15px">{{ r.text }}</div>
+      <div style="color:var(--mut);font-size:12px;margin-top:4px">{{ r.desc }}</div>
+    </div>
+    <span class="badge b-{{ r.css }}" style="font-size:14px">{{ r.icon }}</span>
+  </div>
+  <div style="margin-top:10px">
+    <div style="font-size:12px;color:var(--mut)">احتمال نامناسب بودن (v2): <b style="color:var(--tx)">{{ r.prob_abusive }}</b>
+    {% if r.prob_v1 is not None %} | مدل فحش v1: <b style="color:var(--tx)">{{ r.prob_v1 }}</b>{% endif %}</div>
+    <div class="bar"><i style="width:{{ r.prob_abusive|floatformat:0 }}%;background:linear-gradient(90deg,#f59e0b,#ef4444)"></i></div>
+  </div>
+</div>
+{% endfor %}
+<div class="hint">قاعده: v2 ≥ ۰٫۵ → بازبینی · v1 ≥ ۰٫۹ و v2 ≥ ۰٫۷ → بلاک · در غیر این صورت مجاز</div>
+{% endif %}
+{% endblock %}

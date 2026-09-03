@@ -1,0 +1,14 @@
+# دیتاست‌های خام شخص ثالث (لایسنس نامشخص — از لینک‌های README دانلود و با build_merged.py بسازید)
+candidates/
+data-merged/
+persian-abusive-words/
+
+# artifacts اجرا
+__pycache__/
+*.pyc
+modsite/media/
+moderation/extra_data/
+moderation/train_web.log
+moderation/train_status.json
+moderation/train_status.json.tmp
+.cache/

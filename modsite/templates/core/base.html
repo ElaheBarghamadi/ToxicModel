@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}سامانه مدیریت محتوای فارسی{% endblock %}</title>
+<style>
+:root{--bg:#0f1420;--card:#171e2e;--card2:#1d2537;--line:#2a3550;--tx:#e8ecf5;--mut:#93a0bb;
+--ok:#22c55e;--rev:#f59e0b;--blk:#ef4444;--acc:#60a5fa;--violet:#a78bfa}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:Vazirmatn,Tahoma,'Segoe UI',sans-serif;line-height:1.8}
+a{color:var(--acc);text-decoration:none}
+.layout{display:flex;min-height:100vh}
+aside{width:240px;background:var(--card);border-left:1px solid var(--line);padding:20px 14px;flex-shrink:0}
+.brand{font-size:18px;font-weight:800;margin-bottom:4px;color:var(--violet)}
+.brand small{display:block;color:var(--mut);font-weight:400;font-size:11px}
+nav a{display:block;padding:9px 12px;border-radius:9px;color:var(--tx);margin-bottom:3px;font-size:14px}
+nav a:hover{background:var(--card2)}
+nav a.active{background:var(--card2);color:var(--violet);font-weight:700}
+main{flex:1;padding:28px;max-width:1100px;margin:0 auto;width:100%}
+h1{font-size:22px;margin-bottom:6px}
+h2{font-size:17px;margin:26px 0 10px;color:var(--violet)}
+.sub{color:var(--mut);font-size:13px;margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.kpi{background:var(--card2);border-radius:12px;padding:14px;text-align:center}
+.kpi b{display:block;font-size:24px;color:var(--acc)}
+.kpi span{color:var(--mut);font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right}
+th{color:var(--mut);font-weight:600;font-size:12px}
+tr:hover td{background:var(--card2)}
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:700}
+.b-ok{background:#22c55e22;color:var(--ok)}
+.b-review{background:#f59e0b22;color:var(--rev)}
+.b-block{background:#ef444421;color:var(--blk)}
+textarea,input[type=text]{width:100%;background:var(--card2);border:1px solid var(--line);color:var(--tx);
+border-radius:10px;padding:12px;font-family:inherit;font-size:14px}
+textarea{min-height:110px;resize:vertical}
+.btn{background:var(--violet);color:#0f1420;border:0;border-radius:10px;padding:10px 26px;font-size:14px;
+font-weight:800;cursor:pointer;font-family:inherit}
+.btn:hover{filter:brightness(1.15)}
+.btn.gray{background:var(--card2);color:var(--tx);border:1px solid var(--line)}
+.bar{height:9px;background:var(--card2);border-radius:99px;overflow:hidden;margin-top:5px}
+.bar>i{display:block;height:100%;border-radius:99px}
+.hint{background:#60a5fa14;border:1px solid #60a5fa33;border-radius:10px;padding:10px 14px;font-size:13px;color:#bcd3f7}
+.warn{background:#f59e0b14;border:1px solid #f59e0b33;border-radius:10px;padding:10px 14px;font-size:13px;color:#fbd38d}
+pre{background:#0a0e17;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:12px;
+overflow:auto;direction:ltr;text-align:left;max-height:340px;color:#9fb3d9}
+.exp{border-right:3px solid var(--violet);padding:10px 14px;background:var(--card2);border-radius:8px;margin-bottom:10px;font-size:13.5px}
+.exp b{color:var(--violet)}
+.exp .use{color:var(--mut);font-size:12px}
+.code{direction:ltr;text-align:left;font-family:monospace;background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12px}
+footer{color:var(--mut);font-size:11px;margin-top:30px;text-align:center}
+.match-yes{color:var(--ok)}.match-no{color:var(--blk)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside>
+  <div class="brand">🛡️ ناظر<small>سامانه مدیریت محتوای فارسی</small></div>
+  <nav>
+    <a href="/" class="{% block nav_home %}{% endblock %}">📊 داشبورد و متریک‌ها</a>
+    <a href="/test/" class="{% block nav_test %}{% endblock %}">✏️ تست تک‌کامنت</a>
+    <a href="/batch/" class="{% block nav_batch %}{% endblock %}">📁 تست با فایل</a>
+    <a href="/train/" class="{% block nav_train %}{% endblock %}">🎓 آموزش مدل</a>
+  </nav>
+</aside>
+<main>
+{% block content %}{% endblock %}
+<footer>مدل v2: ۱۰۹٬۷۴۷ نمونه از ۵ منبع فارسی · LinearSVC/LR + TF-IDF · جنگو</footer>
+</main>
+</div>
+</body>
+</html>

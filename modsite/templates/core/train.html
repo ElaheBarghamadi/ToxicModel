@@ -1,0 +1,75 @@
+{% extends "core/base.html" %}
+{% block title %}آموزش مدل — ناظر{% endblock %}
+{% block nav_train %}active{% endblock %}
+{% block content %}
+<h1>🎓 آموزش مجدد مدل</h1>
+<p class="sub">مدل روی داده‌های ادغام‌شده (+ داده‌های اضافه آپلود‌شده) دوباره آموزش می‌بیند — حدود ۱ تا ۲ دقیقه</p>
+
+<div class="card">
+<h2 style="margin-top:0">۱) داده اضافی (اختیاری)</h2>
+<p style="font-size:13px;color:var(--mut)">اگر کامنت‌های لیبل‌دار خودتان را دارید (CSV با ستون‌های text و label با مقادیر ۰/۱) آپلود کنید؛ در آموزش بعدی استفاده می‌شود.</p>
+<form method="post" action="/train/upload-data/" enctype="multipart/form-data">
+  <input type="file" name="file" accept=".csv,.xlsx,.tsv" required
+         style="background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px;width:100%;color:var(--tx)">
+  <div style="margin-top:10px"><button class="btn gray">ذخیره داده</button></div>
+</form>
+{% if upload_ok %}<div class="hint" style="margin-top:10px">{{ upload_ok }}</div>{% endif %}
+{% if upload_error %}<div class="warn" style="margin-top:10px">{{ upload_error }}</div>{% endif %}
+{% if extra_files %}
+<p style="font-size:13px;margin-top:10px">فایل‌های اضافه ذخیره‌شده: {% for f in extra_files %}<span class="code">{{ f }}</span> {% endfor %}</p>
+{% endif %}
+</div>
+
+<div class="card">
+<h2 style="margin-top:0">۲) شروع آموزش</h2>
+<p style="font-size:13px;color:var(--mut)">داده فعلی: <b style="color:var(--tx)">{{ stats.total|default:'—' }}</b> نمونه
+{% if stats.pos_ratio %}(نامناسب: {{ stats.pos_ratio }}){% endif %} از منابع:
+{% for s, c in stats.sources.items %}{{ s }}={{ c }} {% endfor %}</p>
+<button class="btn" id="startBtn" onclick="startTrain()">شروع آموزش 🚀</button>
+<span id="startMsg" style="margin-right:10px;font-size:13px"></span>
+</div>
+
+<div class="card" id="progCard" style="display:none">
+<h2 style="margin-top:0">پیشرفت</h2>
+<div class="bar" style="height:14px"><i id="progBar" style="width:0%;background:linear-gradient(90deg,#60a5fa,#a78bfa)"></i></div>
+<p id="progMsg" style="margin-top:8px;font-size:13.5px">…</p>
+<pre id="logBox"></pre>
+</div>
+
+{% if last_summary %}
+<div class="card">
+<h2 style="margin-top:0">✅ نتیجه آخرین آموزش</h2>
+<table>
+<tr><th>مجموعه آزمون</th><th>دقت</th><th>بازیابی</th><th>F1</th><th>تعداد</th></tr>
+{% for n, s in last_summary.items %}
+<tr><td>{{ n }}</td><td>{{ s.P }}</td><td>{{ s.R }}</td><td><b>{{ s.F1 }}</b></td><td>{{ s.n }}</td></tr>
+{% endfor %}
+</table>
+</div>
+{% endif %}
+
+<script>
+let timer=null;
+async function poll(){
+  try{
+    const r=await fetch('/status/');const d=await r.json();
+    const st=d.status||{};
+    document.getElementById('progBar').style.width=(st.pct||0)+'%';
+    document.getElementById('progMsg').textContent=st.message||'…';
+    document.getElementById('logBox').textContent=d.log||'';
+    if(!st.running){clearInterval(timer);timer=null;
+      document.getElementById('startBtn').disabled=false;
+      if(st.stage==='done'){location.reload();}}
+  }catch(e){}
+}
+async function startTrain(){
+  const r=await fetch('/train/start/',{method:'POST'});
+  const d=await r.json();
+  document.getElementById('startMsg').textContent=d.started?'آموزش شروع شد…':'آموزشی در حال اجراست!';
+  if(d.started){document.getElementById('progCard').style.display='block';
+    document.getElementById('startBtn').disabled=true;
+    if(!timer)timer=setInterval(poll,2000);}
+}
+window.addEventListener('load',()=>{poll();});
+</script>
+{% endblock %}

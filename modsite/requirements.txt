@@ -1,0 +1,6 @@
+django>=5.0
+scikit-learn>=1.4
+joblib
+numpy
+pandas
+openpyxl
