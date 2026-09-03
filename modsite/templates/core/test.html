@@ -30,6 +30,6 @@
   </div>
 </div>
 {% endfor %}
-<div class="hint">قاعده: v2 ≥ ۰٫۵ → بازبینی · v1 ≥ ۰٫۹ و v2 ≥ ۰٫۷ → بلاک · در غیر این صورت مجاز</div>
+<div class="hint">قاعده (از validation، نه تست): v2 ≥ {{ cfg.review_threshold }} → بازبینی · v1 ≥ {{ cfg.block_v1 }} و v2 ≥ {{ cfg.block_v2 }} → بلاک · در غیر این صورت مجاز</div>
 {% endif %}
 {% endblock %}

@@ -26,27 +26,24 @@ def fmt(x, nd=3):
 # ---------------- داشبورد ----------------
 def home(request):
     m = model_utils.load_metrics()
-    v2 = m.get('v2', {})
-    per_test = v2.get('per_test', {})
-    # جدول آستانه نسخه ۱ (روی تست توییتر)
+    v3 = m.get('v3', {})
+    cfg = model_utils.model_config()
+    per_test = v3.get('per_test', {})
+    # جدول آستانه نسخه ۱ (تاریخی — روی تست تیون شده بود؛ در v3 فقط validation استفاده شد)
     thr_rows = []
     for t, row in sorted((m.get('threshold_table') or {}).items(), key=lambda kv: float(kv[0])):
         thr_rows.append({'thr': fmt(float(t), 2), **{k: fmt(v) for k, v in row.items()}})
     stats = model_utils.train_data_stats()
+    src_fa = {'tweets': 'توییتر', 'naseza': 'تلگرام',
+              'pars_offensive': 'اینستاگرام', 'phate': 'PHate',
+              'phicad': 'اینستاگرام (PHICAD)'}
     ctx = {
-        'per_test': [
-            {'name': n,
-             'v1': d.get('v1', {}), 'v2': d.get('v2', {}),
-             'n': d.get('n'), 'pos': d.get('pos'),
-             'src_fa': {'tweets': 'توییتر', 'naseza': 'تلگرام',
-                        'pars_offensive': 'اینستاگرام', 'phate': 'PHate',
-                        'phicad': 'اینستاگرام (PHICAD)'}.get(n, n)}
-            for n, d in per_test.items()],
+        'rows': [
+            {'name': n, 'src_fa': src_fa.get(n, n), **d} for n, d in per_test.items()],
         'thr_rows': thr_rows,
-        'train_total': v2.get('train_size', stats['total']),
-        'cv_f1': v2.get('cv_f1_sample'),
+        'cfg': cfg,
+        'train_total': v3.get('train_size_v2', stats['total']),
         'stats': stats,
-        'train_size_v1': m.get('data', {}).get('train'),
     }
     return render(request, 'core/home.html', ctx)
 
@@ -56,6 +53,7 @@ def home(request):
 def single_test(request):
     results = None
     text = ''
+    cfg = model_utils.model_config()
     if request.method == 'POST':
         text = request.POST.get('text', '').strip()
         if text:
@@ -64,7 +62,7 @@ def single_test(request):
             for r in model_utils.predict_rows(lines):
                 icon, desc, cls = DECISION_META[r['decision']]
                 results.append({**r, 'icon': icon, 'desc': desc, 'css': cls})
-    return render(request, 'core/test.html', {'results': results, 'text': text})
+    return render(request, 'core/test.html', {'results': results, 'text': text, 'cfg': cfg})
 
 
 # ---------------- تست با فایل ----------------
@@ -149,7 +147,9 @@ def train_page(request):
     return render(request, 'core/train.html', {
         'status': st, 'log': train_utils.log_tail(),
         'extra_files': extra_files, 'last_summary': last,
-        'stats': model_utils.train_data_stats()})
+        'stats': model_utils.train_data_stats(),
+        'config': model_utils.model_config(),
+        'archives': [p.name for p in model_utils.archived_models()[:3]]})
 
 
 @csrf_exempt
@@ -189,6 +189,15 @@ def train_start(request):
         started = train_utils.start_training()
         st = train_utils.read_status()
         return JsonResponse({'started': started, 'status': st})
+    return JsonResponse({'error': 'POST فقط'}, status=405)
+
+
+@csrf_exempt
+def train_rollback(request):
+    """بازگردانی آخرین نسخه بایگانی‌شده مدل."""
+    if request.method == 'POST':
+        ok, msg = model_utils.rollback_model()
+        return JsonResponse({'ok': ok, 'message': msg})
     return JsonResponse({'error': 'POST فقط'}, status=405)
 
 

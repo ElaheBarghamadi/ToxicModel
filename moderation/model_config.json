@@ -1,0 +1,11 @@
+{
+  "version": "v3",
+  "trained_at": "2026-09-03 19:45",
+  "review_threshold": 0.4484,
+  "block_v1": 0.8,
+  "block_v2": 0.9,
+  "selected_on": "validation (8k from train)",
+  "algo": "LogisticRegression (both models)",
+  "train_size_v2": 109747,
+  "train_size_v1": 26616
+}

@@ -19,8 +19,42 @@ def predict_rows(texts):
 
 
 def reload_models():
-    """پاک‌کردن کش مدل‌ها (بعد از آموزش مجدد)."""
-    moderate._models.clear()
+    """پاک‌کردن کش مدل‌ها (بعد از آموزش مجدد/بازگردانی)."""
+    moderate.reload_models()
+
+
+def model_config():
+    """پیکربندی فعلی مدل (آستانه‌ها، نسخه، الگوریتم)."""
+    path = MOD / 'model_config.json'
+    try:
+        return json.load(open(path, encoding='utf-8'))
+    except Exception:
+        return {'version': 'نامشخص', 'algo': 'LogisticRegression',
+                'review_threshold': 0.448, 'block_v1': 0.8, 'block_v2': 0.9}
+
+
+def archived_models():
+    """نسخه‌های بایگانی‌شده (جدیدترین اول)."""
+    arc = MOD / 'models_archive'
+    if not arc.exists():
+        return []
+    return sorted(arc.glob('model_*.joblib'), reverse=True)
+
+
+def rollback_model():
+    """بازگردانی جدیدترین نسخه بایگانی به‌عنوان مدل فعال."""
+    arcs = archived_models()
+    if not arcs:
+        return False, 'نسخه بایگانی‌ای وجود ندارد'
+    import shutil
+    shutil.copy(arcs[0], MOD / 'model.joblib')
+    cfg = model_config()
+    cfg['version'] = f'rollback←{arcs[0].stem}'
+    cfg['trained_at'] = arcs[0].stem.replace('model_', '')
+    json.dump(cfg, open(MOD / 'model_config.json', 'w', encoding='utf-8'),
+              ensure_ascii=False, indent=2)
+    reload_models()
+    return True, f'بازگردانی شد: {arcs[0].name}'
 
 
 def load_metrics():

@@ -12,5 +12,6 @@ urlpatterns = [
     path('train/', views.train_page, name='train'),
     path('train/upload-data/', views.train_upload_data, name='train_upload'),
     path('train/start/', views.train_start, name='train_start'),
+    path('train/rollback/', views.train_rollback, name='train_rollback'),
     path('status/', views.status_json, name='status'),
 ]

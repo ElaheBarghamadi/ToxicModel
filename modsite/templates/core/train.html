@@ -25,8 +25,16 @@
 <p style="font-size:13px;color:var(--mut)">داده فعلی: <b style="color:var(--tx)">{{ stats.total|default:'—' }}</b> نمونه
 {% if stats.pos_ratio %}(نامناسب: {{ stats.pos_ratio }}){% endif %} از منابع:
 {% for s, c in stats.sources.items %}{{ s }}={{ c }} {% endfor %}</p>
-<button class="btn" id="startBtn" onclick="startTrain()">شروع آموزش 🚀</button>
-<span id="startMsg" style="margin-right:10px;font-size:13px"></span>
+<p style="font-size:12.5px;color:var(--mut)">مدل فعال: <b style="color:var(--tx)">{{ config.version }}</b>
+({{ config.trained_at }}) · الگوریتم: <b style="color:var(--tx)">{{ config.algo }}</b> ·
+آستانه‌ها: review={{ config.review_threshold }} / block=(v1≥{{ config.block_v1 }}، v2≥{{ config.block_v2 }})
+{% if archives %}· نسخه‌های بایگانی: {{ archives|join:'، ' }}{% endif %}</p>
+<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+  <button class="btn" id="startBtn" onclick="startTrain()">شروع آموزش 🚀</button>
+  <button class="btn gray" id="rbBtn" onclick="rollback()">↩️ بازگردانی نسخه قبل</button>
+  <span id="startMsg" style="font-size:13px"></span>
+</div>
+<p style="font-size:12px;color:var(--mut);margin-top:8px">ایمن‌سازی‌ها: داده آپلودی در برابر تست‌ها پالایش می‌شود · قبل از ذخیره، نسخه فعلی بایگانی می‌گردد · اگر F1 تست توییتی زیر ۰٫۴۵ بیامد آموزش رد می‌شود و مدل قبلی می‌ماند.</p>
 </div>
 
 <div class="card" id="progCard" style="display:none">
@@ -69,6 +77,13 @@ async function startTrain(){
   if(d.started){document.getElementById('progCard').style.display='block';
     document.getElementById('startBtn').disabled=true;
     if(!timer)timer=setInterval(poll,2000);}
+}
+async function rollback(){
+  if(!confirm('آخرین نسخه بایگانی به‌عنوان مدل فعال بازگردانی شود؟'))return;
+  const r=await fetch('/train/rollback/',{method:'POST'});
+  const d=await r.json();
+  alert(d.message);
+  if(d.ok)location.reload();
 }
 window.addEventListener('load',()=>{poll();});
 </script>

@@ -336,5 +336,78 @@
       ]
     },
     "inference_2000_sec": 0.065
+  },
+  "v3": {
+    "review_threshold": 0.4484,
+    "block_v1": 0.8,
+    "block_v2": 0.9,
+    "selected_on": "validation (8k from train)",
+    "algo": "LogisticRegression (both models)",
+    "per_test": {
+      "tweets": {
+        "P": 0.713,
+        "R": 0.918,
+        "F1": 0.803,
+        "F1_ci95": [
+          0.777,
+          0.828
+        ],
+        "block_P": 1.0,
+        "block_R": 0.627,
+        "n": 4698
+      },
+      "naseza": {
+        "P": 0.829,
+        "R": 0.902,
+        "F1": 0.864,
+        "F1_ci95": [
+          0.836,
+          0.889
+        ],
+        "block_P": 0.989,
+        "block_R": 0.473,
+        "n": 857
+      },
+      "pars_offensive": {
+        "P": 0.672,
+        "R": 0.922,
+        "F1": 0.777,
+        "F1_ci95": [
+          0.749,
+          0.806
+        ],
+        "block_P": 0.882,
+        "block_R": 0.323,
+        "n": 1262
+      },
+      "phate": {
+        "P": 0.725,
+        "R": 0.793,
+        "F1": 0.757,
+        "F1_ci95": [
+          0.728,
+          0.789
+        ],
+        "block_P": 0.933,
+        "block_R": 0.302,
+        "n": 1058
+      },
+      "phicad": {
+        "P": 0.938,
+        "R": 0.915,
+        "F1": 0.926,
+        "F1_ci95": [
+          0.922,
+          0.93
+        ],
+        "block_P": 0.993,
+        "block_R": 0.288,
+        "n": 11642
+      }
+    },
+    "version": "v3",
+    "trained_at": "2026-09-03 19:45",
+    "train_size_v2": 109747,
+    "train_size_v1": 26616
   }
 }
