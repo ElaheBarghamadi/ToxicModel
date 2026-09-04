@@ -67,7 +67,8 @@ def single_test(request):
             for r in model_utils.predict_rows(lines):
                 icon, desc, cls = DECISION_META[r['decision']]
                 results.append({**r, 'icon': icon, 'desc': desc, 'css': cls})
-    return render(request, 'core/test.html', {'results': results, 'text': text, 'cfg': cfg})
+    return render(request, 'core/test.html',
+                  {'results': results, 'results_json': results or [], 'text': text, 'cfg': cfg})
 
 
 # ---------------- تست با فایل ----------------
@@ -93,9 +94,10 @@ def batch_test(request):
                                   int(p['decision'] in ('review', 'block')) == lab)})
             labeled = [r for r in table if r['label'] is not None]
             ctx.update({
-                'table': table[:200],
+                # کل داده به‌صورت JSON — رندر تکه‌ای در مرورگر (لیزی‌لود)
+                'rows_json': table[:500],
                 'n_total': len(table),
-                'truncated': len(table) > 200,
+                'truncated': len(table) > 500,
                 'has_label': bool(labeled),
                 'metrics': batch_utils.evaluate(
                     [(r['text'], r['label'], r['decision']) for r in labeled]) if labeled else None,

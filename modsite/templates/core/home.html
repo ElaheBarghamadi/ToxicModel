@@ -57,14 +57,14 @@
 </div>
 
 <h2>🧭 قاعده تصمیم‌گیری</h2>
-<div class="card stagger">
+<div class="card stagger cv">
 <div class="exp"><b>✅ ok — انتشار فوری:</b> احتمال v2 زیر {{ cfg.review_threshold }} است.<div class="use">حجم عمده کامنت‌های سالم — بدون اصطکاک.</div></div>
 <div class="exp"><b>🔍 review — صف بازبینی:</b> v2 ≥ {{ cfg.review_threshold }} ولی شرط بلاک برقرار نیست.<div class="use">پوشش بالای کل محتوای نامناسب؛ تصمیم نهایی با انسان.</div></div>
 <div class="exp"><b>🚫 block — مسدودسازی خودکار:</b> v1 ≥ {{ cfg.block_v1 }} <u>و</u> v2 ≥ {{ cfg.block_v2 }} (هر دو مطمئن).<div class="use">دقت روی validation: ۹۸٫۹٪ — روی تست‌های دست‌نخورده ۸۸ تا ۱۰۰٪.</div></div>
 </div>
 
 <h2>📚 متریک‌ها یعنی چه؟</h2>
-<div class="card stagger">
+<div class="card stagger cv">
 <div class="exp"><b>دقت (Precision):</b> از هر ۱۰۰ کامنتی که مدل نامناسب گفت، چند‌تا واقعاً نامناسب بودند؟<div class="use">بالاتر = اتهام بی‌گناه کمتر.</div></div>
 <div class="exp"><b>بازیابی (Recall):</b> از هر ۱۰۰ کامنت واقعاً نامناسب، چند تا پیدا شد؟<div class="use">بالاتر = فرار کمتر توهین.</div></div>
 <div class="exp"><b>F1:</b> میانگین هماهنگ دقت و بازیابی؛ ضعف یکی، F1 را پایین می‌کشد.</div>
@@ -73,7 +73,7 @@
 </div>
 
 <h2>🧠 معماری و ایمنی</h2>
-<div class="card">
+<div class="card cv">
 <p style="font-size:13.5px">
 <b>v2</b> — LogisticRegression (C=4) روی ۱۰۹٬۷۴۷ نمونه ۵ منبع؛ فحش + توهین ملایم؛ تصمیم‌گیرنده review.<br>
 <b>v1</b> — LogisticRegression (C=10) فقط روی توییت‌های فحش؛ قفل دوم block.<br>

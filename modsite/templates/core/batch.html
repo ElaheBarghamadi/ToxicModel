@@ -50,29 +50,52 @@
 </div>
 {% endif %}
 
-{% if table %}
-<h2>🧾 پیش‌بینی‌ها{% if truncated %} <span style="color:var(--mut);font-size:13px">(۲۰۰ اول از {{ n_total }})</span>{% else %} <span style="color:var(--mut);font-size:13px">({{ n_total }})</span>{% endif %}</h2>
+{% if rows_json %}
+<h2>🧾 پیش‌بینی‌ها{% if truncated %} <span style="color:var(--mut);font-size:13px">(۵۰۰ اول از {{ n_total }} — همه در فایل دانلودی)</span>{% else %} <span style="color:var(--mut);font-size:13px">({{ n_total }})</span>{% endif %}
+<span id="rowCounter" class="code" style="font-size:11px"></span></h2>
 <div class="card">
 <table>
-<tr><th>کامنت</th><th>احتمال</th><th>تصمیم</th>{% if has_label %}<th>لیبل</th><th>درست؟</th>{% endif %}</tr>
-{% for r in table %}
-<tr>
-  <td style="max-width:430px">{{ r.text }}</td>
-  <td class="code">{{ r.prob|floatformat:2 }}</td>
-  <td><span class="badge b-{{ r.css }}">{{ r.icon }}</span></td>
-  {% if has_label %}
-  <td>{{ r.label }}</td>
-  <td>{% if r.match %}<span class="match-yes">✔</span>{% else %}<span class="match-no">✘</span>{% endif %}</td>
-  {% endif %}
-</tr>
-{% endfor %}
+<thead><tr><th>کامنت</th><th>احتمال</th><th>تصمیم</th>{% if has_label %}<th>لیبل</th><th>درست؟</th>{% endif %}</tr></thead>
+<tbody id="rowsBox"></tbody>
 </table>
+<div id="rowsSentinel" style="height:6px"></div>
+<div style="display:flex;justify-content:center;margin-top:12px">
+  <button class="btn gray" id="rowsMoreBtn" onclick="window.__rowsMore&&window.__rowsMore()">نمایش بیشتر ↓</button>
 </div>
+<p style="font-size:11px;color:var(--mut);margin-top:8px">📜 رندر تنبل فعال است — ردیف‌ها هنگام اسکرول، تکه‌تکه ساخته می‌شوند</p>
+</div>
+{{ rows_json|json_script:"rows-data" }}
 {% endif %}
 {% endblock %}
 {% block scripts %}
 <script>
 document.getElementById('upForm').addEventListener('submit',()=>toast('فایل در حال پردازش است…','⚙️',2500));
 {% if metrics %}setTimeout(()=>toast('ارزیابی انجام شد — F1={{ metrics.f1 }}','🎯'),600);{% endif %}
+{% if rows_json %}
+(function(){
+  const DATA=JSON.parse(document.getElementById('rows-data').textContent);
+  const hasLabel={{ has_label|yesno:'true,false' }};
+  const META={ok:['✅ مجاز','b-ok'],review:['🔍 بازبینی','b-review'],block:['🚫 بلاک','b-block']};
+  function renderRow(r){
+    const tr=document.createElement('tr');
+    const td1=document.createElement('td');td1.style.maxWidth='430px';td1.textContent=r.text;tr.appendChild(td1);
+    const td2=document.createElement('td');td2.className='code';td2.textContent=(+r.prob).toFixed(2);tr.appendChild(td2);
+    const td3=document.createElement('td');
+    const b=document.createElement('span');b.className='badge '+((META[r.decision]||META.ok)[1]);
+    b.textContent=(META[r.decision]||META.ok)[0];td3.appendChild(b);tr.appendChild(td3);
+    if(hasLabel){
+      const td4=document.createElement('td');td4.textContent=(r.label===null||r.label===undefined)?'':r.label;tr.appendChild(td4);
+      const td5=document.createElement('td');
+      if(r.match===null||r.match===undefined){td5.textContent='—';td5.style.color='var(--mut)';}
+      else{td5.textContent=r.match?'✔':'✘';td5.className=r.match?'match-yes':'match-no';}
+      tr.appendChild(td5);
+    }
+    return tr;
+  }
+  window.__rowsMore=lazyList({container:document.getElementById('rowsBox'),
+    sentinel:document.getElementById('rowsSentinel'),moreBtn:'rowsMoreBtn',
+    counterId:'rowCounter',data:DATA,render:renderRow,chunk:30}).more;
+})();
+{% endif %}
 </script>
 {% endblock %}

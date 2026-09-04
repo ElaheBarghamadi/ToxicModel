@@ -181,6 +181,44 @@ function countUp(el,target,dec=0,suffix='',dur=1100){
     if(k<1)requestAnimationFrame(step);
   }requestAnimationFrame(step);
 }
+/* ── لیزی‌لود لیست/جدول سنگین ──
+   رندر تکه‌ای (chunk) با IntersectionObserver روی نگهبان (sentinel) */
+function lazyList(opts){
+  const {container,data,render,chunk=30,sentinel=null,counterId=null,moreBtn=null}=opts;
+  let i=0,io=null;
+  function counter(){
+    if(!counterId)return;const c=document.getElementById(counterId);
+    if(c)c.textContent=`نمایش ${i} از ${data.length}`;
+  }
+  function finish(){
+    if(sentinel)sentinel.remove();
+    if(io)io.disconnect();
+    if(moreBtn){const b=document.getElementById(moreBtn);if(b)b.parentElement.style.display='none';}
+  }
+  function more(){
+    if(i>=data.length){finish();return;}
+    const end=Math.min(i+chunk,data.length);
+    const frag=document.createDocumentFragment();
+    for(;i<end;i++)frag.appendChild(render(data[i],i));
+    container.appendChild(frag);
+    counter();
+    if(i>=data.length)finish();
+  }
+  if(sentinel&&'IntersectionObserver' in window){
+    io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)more();})},{rootMargin:'350px'});
+    io.observe(sentinel);
+  }
+  more();
+  return {more};
+}
+/* رندر معوق بخش‌های زیر تاشو */
+document.querySelectorAll('.cv').forEach(el=>{
+  if('IntersectionObserver' in window){
+    const io2=new IntersectionObserver((es,o)=>{es.forEach(e=>{if(e.isIntersecting){
+      e.target.style.contentVisibility='visible';o.unobserve(e.target);}});},{rootMargin:'100px'});
+    el.style.contentVisibility='hidden';io2.observe(el);
+  }
+});
 document.querySelectorAll('[data-count]').forEach(el=>{
   const v=parseFloat(el.dataset.count),d=parseInt(el.dataset.dec||0),s=el.dataset.suffix||'';
   countUp(el,v,d,s);

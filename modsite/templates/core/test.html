@@ -18,31 +18,13 @@
 
 {% if results %}
 <h2>نتایج <span class="badge b-ok">{{ results|length }}</span></h2>
-<div class="stagger" style="display:grid;gap:12px">
-{% for r in results %}
-<div class="card" style="margin:0">
-  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-    <div style="max-width:70%">
-      <div style="font-size:15px">{{ r.text }}</div>
-      <div style="color:var(--mut);font-size:12px;margin-top:3px">{{ r.desc }}</div>
-    </div>
-    <span class="badge b-{{ r.css }}" style="font-size:14px">
-      <span class="pulse {% if r.css == 'ok' %}g{% elif r.css == 'review' %}y{% else %}r{% endif %}"></span>{{ r.icon }}
-    </span>
-  </div>
-  <div style="margin-top:12px">
-    <div style="font-size:12px;color:var(--mut)">
-      احتمال v2: <b style="color:var(--tx)">{{ r.prob_abusive }}</b>
-      <span style="margin:0 6px">·</span> مدل فحش v1: <b style="color:var(--tx)">{{ r.prob_v1 }}</b>
-      <span style="margin:0 6px">·</span>
-      <span class="code">p={{ r.prob_abusive|floatformat:2 }}</span>
-    </div>
-    <div class="bar"><i data-w="{% widthratio r.prob_abusive 1 100 %}"></i></div>
-  </div>
-</div>
-{% endfor %}
+<div id="resBox" style="display:grid;gap:12px"></div>
+<div id="resSentinel" style="height:6px"></div>
+<div style="display:flex;justify-content:center;margin-top:12px">
+  <button class="btn gray" id="resMoreBtn" onclick="window.__resMore&&window.__resMore()">نمایش بیشتر ↓</button>
 </div>
 <div class="hint" style="margin-top:14px">قاعده (از validation): v2 ≥ {{ cfg.review_threshold }} → بازبینی · v1 ≥ {{ cfg.block_v1 }} ∧ v2 ≥ {{ cfg.block_v2 }} → بلاک · وگرنه مجاز</div>
+{{ results_json|json_script:"res-data" }}
 {% endif %}
 {% endblock %}
 {% block scripts %}
@@ -53,5 +35,40 @@ function upd(){const n=txt.value.split('\n').filter(l=>l.trim()).length;
 txt.addEventListener('input',upd);upd();
 function fill(){txt.value=['عالی بود ممنون از مدیریت سایت','نویسنده‌ش خودش یه الاغ بی‌سواده','بریم کیر تو این سایت خراب شد','ارسال کالا تأخیر داشت و پشتیبانی جواب نداد'].join('\n');upd();}
 document.querySelector('form').addEventListener('submit',()=>toast('در حال بررسی…','⏳',1500));
-</script>
+{% if results %}
+(function(){
+  const DATA=JSON.parse(document.getElementById('res-data').textContent);
+  const META={ok:['✅ مجاز','b-ok','g'],review:['🔍 بازبینی','b-review','y'],block:['🚫 بلاک','b-block','r']};
+  function renderCard(r){
+    const m=META[r.decision]||META.ok;
+    const card=document.createElement('div');card.className='card';card.style.margin='0';
+    const top=document.createElement('div');
+    top.style.cssText='display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px';
+    const right=document.createElement('div');right.style.maxWidth='70%';
+    const t1=document.createElement('div');t1.style.fontSize='15px';t1.textContent=r.text;right.appendChild(t1);
+    const t2=document.createElement('div');t2.style.cssText='color:var(--mut);font-size:12px;margin-top:3px';t2.textContent=r.desc;right.appendChild(t2);
+    top.appendChild(right);
+    const badge=document.createElement('span');badge.className='badge '+m[1];badge.style.fontSize='14px';
+    const dot=document.createElement('span');dot.className='pulse '+m[2];badge.appendChild(dot);
+    badge.appendChild(document.createTextNode(m[0]));top.appendChild(badge);
+    card.appendChild(top);
+    const wrap=document.createElement('div');wrap.style.marginTop='12px';
+    const meta=document.createElement('div');meta.style.cssText='font-size:12px;color:var(--mut)';
+    meta.innerHTML='احتمال v2: <b style="color:var(--tx)"></b> · مدل فحش v1: <b style="color:var(--tx)"></b>';
+    meta.querySelectorAll('b')[0].textContent=r.prob_abusive;
+    meta.querySelectorAll('b')[1].textContent=r.prob_v1;
+    wrap.appendChild(meta);
+    const bar=document.createElement('div');bar.className='bar';
+    const fill_=document.createElement('i');fill_.dataset.w=Math.round(r.prob_abusive*100);bar.appendChild(fill_);
+    wrap.appendChild(bar);card.appendChild(wrap);
+    return card;
+  }
+  window.__resMore=lazyList({container:document.getElementById('resBox'),
+    sentinel:document.getElementById('resSentinel'),moreBtn:'resMoreBtn',
+    data:DATA,render:renderCard,chunk:10}).more;
+  window.addEventListener('load',()=>{
+    document.querySelectorAll('#resBox .bar>i[data-w]').forEach(b=>b.style.width=b.dataset.w+'%');
+  });
+})();
+{% endif %}
 {% endblock %}
