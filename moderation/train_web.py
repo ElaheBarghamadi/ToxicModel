@@ -149,8 +149,7 @@ def main():
             write_status('eval', 80 + (i + 1) * 3, f'ارزیابی {n}: F1={summary[n]["F1"]}')
 
         # (ایمن‌سازی ۲) بایگانی نسخه قبلی
-        write_status('save', 95, 'بایگانی نسخه قبلی و ذخیره...')
-        ARCHIVE.mkdir(exist_ok=True)
+        write_status('save', 95, 'بایگانی نسخه قبلی و ذخیره...')        ARCHIVE.mkdir(exist_ok=True)
         ts = time.strftime('%Y%m%d_%H%M%S')
         if (HERE / 'model.joblib').exists():
             shutil.copy(HERE / 'model.joblib', ARCHIVE / f'model_{ts}.joblib')
@@ -166,6 +165,15 @@ def main():
                'extra_rows_dropped_leak': dropped}
         json.dump(cfg, open(HERE / 'model_config.json', 'w', encoding='utf-8'),
                   ensure_ascii=False, indent=2)
+        # تولید گزارش کامل (report.json) — اگر شکست خورد، آموزش رد نمی‌شود
+        try:
+            write_status('save', 97, 'تولید گزارش کامل...')
+            sys.path.insert(0, str(HERE))
+            from report_utils import generate as gen_report
+            gen_report()
+        except Exception:
+            import traceback
+            traceback.print_exc()
         write_status('done', 100, f'کامل شد ({time.time()-t0:.0f} ثانیه) — F1 توییتی {f1_tw:.3f}',
                      running=False, summary=summary, config=cfg)
     except Exception as e:

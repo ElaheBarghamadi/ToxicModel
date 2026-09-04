@@ -53,6 +53,15 @@ def home(request):
     return render(request, 'core/home.html', ctx)
 
 
+# ---------------- گزارش کامل ----------------
+def report_page(request):
+    try:
+        rep = json.load(open(settings.MODERATION_DIR / 'report.json', encoding='utf-8'))
+    except Exception:
+        rep = None
+    return render(request, 'core/report.html', {'r': rep})
+
+
 # ---------------- تست تکی ----------------
 @csrf_exempt
 def single_test(request):

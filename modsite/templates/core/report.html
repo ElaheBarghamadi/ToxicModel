@@ -1,0 +1,164 @@
+{% extends "core/base.html" %}
+{% block title %}گزارش کامل مدل — ناظر{% endblock %}
+{% block nav_report %}active{% endblock %}
+{% block content %}
+<style>
+.donut-wrap{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.conf{display:grid;grid-template-columns:auto 1fr 1fr;gap:4px;font-size:12px;margin-top:10px}
+.conf>div{padding:5px 8px;border-radius:8px;text-align:center}
+.conf .h{color:var(--mut);font-size:11px}
+.conf .tp{background:rgba(52,211,153,.12);color:var(--ok)}
+.conf .fn{background:rgba(248,113,113,.10);color:var(--blk)}
+.conf .fp{background:rgba(251,191,36,.10);color:var(--rev)}
+.conf .tn{background:rgba(52,211,153,.12);color:var(--ok)}
+.srcbar{height:16px;border-radius:8px;overflow:hidden;display:flex;background:rgba(15,21,36,.9)}
+.srcbar .p{background:linear-gradient(90deg,#f87171,#fb923c)}
+.srcbar .n{background:linear-gradient(90deg,#38bdf8,#60a5fa)}
+.tl{position:relative;padding-right:18px}
+.tl::before{content:'';position:absolute;right:5px;top:6px;bottom:6px;width:2px;
+  background:linear-gradient(#60a5fa,#a78bfa);border-radius:9px;opacity:.4}
+.tl-item{position:relative;margin-bottom:14px}
+.tl-item::before{content:'';position:absolute;right:-17px;top:8px;width:9px;height:9px;border-radius:50%;
+  background:var(--grad);box-shadow:0 0 0 3px rgba(96,165,250,.2)}
+.minibar{display:flex;height:10px;border-radius:6px;overflow:hidden;background:rgba(15,21,36,.9);min-width:120px}
+.minibar i{display:block;height:100%}
+</style>
+
+{% if not r %}
+<div class="warn">گزارش هنوز تولید نشده — یک‌بار از پوشه moderation اجرا کنید: <span class="code">python report_utils.py</span></div>
+{% else %}
+
+<h1>📉 گزارش کامل مدل و داده‌ها</h1>
+<p class="sub">نسخه {{ r.version }} · {{ r.algo }} · تولید: {{ r.generated_at }} — همه اعداد از خود فایل‌های داده و مدل محاسبه شده‌اند</p>
+
+<div class="grid g4 stagger">
+  <div class="kpi"><b data-count="{{ r.train.total }}">0</b><span>نمونه آموزش (۵ منبع)</span></div>
+  <div class="kpi"><b data-count="{{ r.mixed.n|default:'19517' }}">0</b><span>نمونه تست (۵ مجموعه)</span></div>
+  <div class="kpi"><b data-count="{{ r.mixed.F1 }}" data-dec="3">0</b><span>F1 کلی [{{ r.mixed.ci.0 }}–{{ r.mixed.ci.1 }}]</span></div>
+  <div class="kpi"><b data-count="{{ r.features.total }}">0</b><span>ویژگی TF-IDF</span></div>
+</div>
+
+<h2>🥧 ترکیب برچسب داده آموزش</h2>
+<div class="card cv">
+<div class="donut-wrap">
+  <svg width="150" height="150" viewBox="0 0 150 150" style="flex-shrink:0">
+    <circle cx="75" cy="75" r="54" fill="none" stroke="rgba(56,189,248,.25)" stroke-width="17"/>
+    <circle cx="75" cy="75" r="54" fill="none" stroke="url(#gd)" stroke-width="17"
+      stroke-linecap="round" transform="rotate(-90 75 75)"
+      stroke-dasharray="{% widthratio r.train.pos_pct 100 339 %} 339.3"/>
+    <defs><linearGradient id="gd"><stop offset="0" stop-color="#f87171"/><stop offset="1" stop-color="#fb923c"/></linearGradient></defs>
+    <text x="75" y="72" text-anchor="middle" fill="#eef2fb" font-size="21" font-weight="800">{{ r.train.pos_pct }}٪</text>
+    <text x="75" y="92" text-anchor="middle" fill="#94a3c3" font-size="10">نامناسب</text>
+  </svg>
+  <div style="flex:1;min-width:240px">
+    {% for s in r.train.sources %}
+    <div style="margin-bottom:11px">
+      <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:3px">
+        <span><b>{{ s.fa }}</b> <span style="color:var(--mut)">{{ s.n }}</span></span>
+        <span style="color:var(--mut)">نامناسب {{ s.pos_pct }}٪ · میانگین طول {{ s.avg_len }} نویسه</span>
+      </div>
+      <div class="srcbar">
+        <i class="p" style="width:{% widthratio s.pos 1 100 %}%;max-width:100%"></i>
+        <i class="n" style="flex:1"></i>
+      </div>
+    </div>
+    {% endfor %}
+    <p style="font-size:11px;color:var(--mut)">نارنجی = نمونه‌های نامناسب (۱) · آبی = سالم (۰) — عرض نسبی از کل منبع</p>
+  </div>
+</div>
+</div>
+
+<h2>📋 آمار تفصیلی منابع آموزش و تست</h2>
+<div class="card cv">
+<table>
+<tr><th>مجموعه</th><th>نقش</th><th>تعداد</th><th>نامناسب</th><th>سهم مثبت</th><th>میانگین طول</th><th>میانه</th><th>P90</th></tr>
+{% for s in r.train.sources %}
+<tr><td><b>{{ s.fa }}</b></td><td style="color:var(--mut)">آموزش</td><td>{{ s.n }}</td><td>{{ s.pos }}</td>
+<td>{{ s.pos_pct }}٪</td><td>{{ s.avg_len }}</td><td>{{ s.med_len }}</td><td>{{ s.p90_len }}</td></tr>
+{% endfor %}
+{% for t in r.tests %}
+<tr><td><b>{{ t.fa }}</b></td><td style="color:var(--acc)">تست</td><td>{{ t.n }}</td><td>{{ t.pos }}</td>
+<td>{{ t.pos_pct }}٪</td><td>{{ t.avg_len }}</td><td>{{ t.med_len }}</td><td>{{ t.p90_len }}</td></tr>
+{% endfor %}
+</table>
+<p style="font-size:11.5px;color:var(--mut);margin-top:8px">طول‌ها بر حسب نویسه، پس از نرمال‌سازی و برش تا ۲۵۰ نویسه.</p>
+</div>
+
+<h2>🏆 نتایج کامل روی ۵ مجموعه تست (دست‌نخورده)</h2>
+<div class="grid g2 stagger">
+{% for name, res in r.results.items %}
+<div class="card" style="margin:0">
+  <div style="display:flex;justify-content:space-between;align-items:baseline">
+    <b style="font-size:14.5px">{{ name }}</b>
+    <span class="code">F1 {{ res.F1 }} [{{ res.ci.0 }}–{{ res.ci.1 }}]</span>
+  </div>
+  <div style="position:relative;height:9px;background:rgba(15,21,36,.9);border-radius:99px;margin:9px 0">
+    <i style="position:absolute;top:0;height:100%;border-radius:99px;opacity:.32;
+      right:{% widthratio res.ci.0 1 100 %}%;width:{% widthratio res.ci.1 1 100 %}%;background:#a78bfa"></i>
+    <i data-w="{% widthratio res.F1 1 100 %}" style="position:absolute;top:0;height:100%;width:0;
+      border-radius:99px;background:linear-gradient(90deg,#60a5fa,#a78bfa);transition:width 1s .2s"></i>
+  </div>
+  <div style="display:flex;gap:14px;font-size:12.5px;color:var(--mut);flex-wrap:wrap">
+    <span>دقت <b style="color:var(--tx)">{{ res.P }}</b></span>
+    <span>بازیابی <b style="color:var(--tx)">{{ res.R }}</b></span>
+    <span>بلاک خودکار <b style="color:var(--tx)">{{ res.block.P }}/{{ res.block.R }}</b></span>
+  </div>
+  <div class="conf">
+    <div class="h"></div><div class="h">پیش‌بینی نامناسب</div><div class="h">پیش‌بینی سالم</div>
+    <div class="h">واقعاً نامناسب</div><div class="tp">✔ {{ res.tp }}</div><div class="fn">FN {{ res.fn }}</div>
+    <div class="h">واقعاً سالم</div><div class="fp">FP {{ res.fp }}</div><div class="tn">✔ {{ res.tn }}</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11.5px;color:var(--mut)">
+    <span>تصمیم‌ها:</span>
+    <div class="minibar" style="flex:1">
+      <i style="width:{% widthratio res.decisions.ok 1 100 %}%;background:#34d399"></i>
+      <i style="width:{% widthratio res.decisions.review 1 100 %}%;background:#fbbf24"></i>
+      <i style="width:{% widthratio res.decisions.block 1 100 %}%;background:#f87171"></i>
+    </div>
+    <span class="code" style="font-size:10.5px">{{ res.decisions.ok }}/{{ res.decisions.review }}/{{ res.decisions.block }}</span>
+  </div>
+</div>
+{% endfor %}
+</div>
+
+<h2>🎚️ جدول جابه‌جایی آستانه (روی کل ۱۹٬۵۱۷ نمونه تست)</h2>
+<div class="card cv">
+<table>
+<tr><th>آستانه v2</th><th>دقت</th><th>بازیابی</th><th>F1</th><th style="width:30%">نمودار F1</th><th>FP</th><th>FN</th></tr>
+{% for s in r.sweep %}
+<tr {% if s.thr == r.thresholds.review %}style="background:rgba(96,165,250,.08)"{% endif %}>
+<td class="code">{{ s.thr }}</td>
+<td>{{ s.P }}</td><td>{{ s.R }}</td><td><b>{{ s.F1 }}</b></td>
+<td><div style="height:7px;background:rgba(15,21,36,.9);border-radius:6px;overflow:hidden">
+<i style="display:block;height:100%;width:{% widthratio s.F1 1 100 %}%;background:linear-gradient(90deg,#60a5fa,#a78bfa)"></i></div></td>
+<td>{{ s.fp }}</td><td>{{ s.fn }}</td>
+</tr>
+{% endfor %}
+</table>
+<p style="font-size:11.5px;color:var(--mut);margin-top:8px">ردیف هایلایت‌شده = آستانه فعال سیستم (از validation انتخاب شده، نه از این جدول).</p>
+</div>
+
+<h2>🧬 مدل و ویژگی‌ها</h2>
+<div class="grid g4 cv">
+  <div class="kpi"><b>{{ r.features.char_vocab }}</b><span>ویژگی کاراکتری (2-5گرم)</span></div>
+  <div class="kpi"><b>{{ r.features.word_vocab }}</b><span>ویژگی واژه‌ای (1-2گرم)</span></div>
+  <div class="kpi"><b>{{ r.features.model_mb }}MB</b><span>حجم v2 + v1 ({{ r.features.model_v1_mb }}MB)</span></div>
+  <div class="kpi"><b>{{ r.features.coef_nonzero }}</b><span>ضرایب غیرصفر از {{ r.features.coef_total }}</span></div>
+</div>
+
+<h2>🧾 خط تولید داده (Data Lineage)</h2>
+<div class="card cv">
+<div class="tl">
+{% for c in r.cleaning %}
+<div class="tl-item">
+  <b style="font-size:13.5px">{{ c.step }}</b>
+  {% if c.n %}<span class="code" style="margin-right:8px">{{ c.n }}</span>{% endif %}
+  <div style="color:var(--mut);font-size:12px">{{ c.note }}</div>
+</div>
+{% endfor %}
+</div>
+</div>
+
+<div class="hint">این گزارش به‌صورت خودکار از فایل‌های داده و مدل تولید شده (report_utils.py) و بعد از هر آموزش مجدد از طریق سایت، به‌روز می‌شود.</div>
+{% endif %}
+{% endblock %}
