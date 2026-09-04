@@ -23,43 +23,19 @@ def fmt(x, nd=3):
     return '—' if x is None else f'{x:.{nd}f}'.rstrip('0').rstrip('.')
 
 
-# ---------------- داشبورد ----------------
+# ---------------- صفحه اصلی: وضعیت مدل و گزارش کامل ----------------
 def home(request):
-    m = model_utils.load_metrics()
-    v3 = m.get('v3', {})
-    cfg = model_utils.model_config()
-    per_test = v3.get('per_test', {})
-    # جدول آستانه نسخه ۱ (تاریخی — روی تست تیون شده بود؛ در v3 فقط validation استفاده شد)
-    thr_rows = []
-    for t, row in sorted((m.get('threshold_table') or {}).items(), key=lambda kv: float(kv[0])):
-        thr_rows.append({'thr': fmt(float(t), 2), **{k: fmt(v) for k, v in row.items()}})
-    stats = model_utils.train_data_stats()
-    src_fa = {'tweets': 'توییتر', 'naseza': 'تلگرام',
-              'pars_offensive': 'اینستاگرام', 'phate': 'PHate',
-              'phicad': 'اینستاگرام (PHICAD)'}
-    ctx = {
-        'rows': [
-            {'name': n, 'src_fa': src_fa.get(n, n), **d} for n, d in per_test.items()],
-        'thr_rows': thr_rows,
-        'cfg': cfg,
-        'train_total': v3.get('train_size_v2', stats['total']),
-        'stats': stats,
-    }
-    for row in ctx['rows']:
-        if 'F1' in row:
-            row['f1_pct'] = round(row['F1'] * 100, 1)
-            row['ci_lo_pct'] = round(row['F1_ci95'][0] * 100, 1)
-            row['ci_span_pct'] = round((row['F1_ci95'][1] - row['F1_ci95'][0]) * 100, 1)
-    return render(request, 'core/home.html', ctx)
-
-
-# ---------------- گزارش کامل ----------------
-def report_page(request):
     try:
         rep = json.load(open(settings.MODERATION_DIR / 'report.json', encoding='utf-8'))
     except Exception:
         rep = None
-    return render(request, 'core/report.html', {'r': rep})
+    return render(request, 'core/home.html', {'r': rep, 'cfg': model_utils.model_config()})
+
+
+# ---------------- گزارش کامل (همان صفحه اصلی) ----------------
+def report_page(request):
+    from django.shortcuts import redirect
+    return redirect('/')
 
 
 # ---------------- تست تکی ----------------

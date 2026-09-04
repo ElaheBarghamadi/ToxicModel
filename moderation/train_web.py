@@ -149,7 +149,8 @@ def main():
             write_status('eval', 80 + (i + 1) * 3, f'ارزیابی {n}: F1={summary[n]["F1"]}')
 
         # (ایمن‌سازی ۲) بایگانی نسخه قبلی
-        write_status('save', 95, 'بایگانی نسخه قبلی و ذخیره...')        ARCHIVE.mkdir(exist_ok=True)
+        write_status('save', 95, 'بایگانی نسخه قبلی و ذخیره...')
+        ARCHIVE.mkdir(exist_ok=True)
         ts = time.strftime('%Y%m%d_%H%M%S')
         if (HERE / 'model.joblib').exists():
             shutil.copy(HERE / 'model.joblib', ARCHIVE / f'model_{ts}.joblib')
