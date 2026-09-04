@@ -35,6 +35,8 @@ CLEANING = [
     {'step': 'افزودن ۴ منبع (ناسزا، ParsOffensive، PHate، PHICAD)', 'n': None,
      'note': 'ناسزا CC0 — بقیه مصنوع تحقیقاتی'},
     {'step': 'مجموعه آموزش نهایی ادغام‌شده', 'n': 109747, 'note': '۴۵٫۷٪ مثبت — dedup بین‌منبعی'},
+    {'step': 'گزینش ارزش‌محور (تحت ۲۰ هزار)', 'n': None,
+     'note': 'آموزش متقاطع ۳-فولدی: نمونه‌های سخت (۸k) + مرزی (۵k) + پرکننده متنوع (۶٫۸k) — دسته در ستون reason'},
 ]
 
 
@@ -94,12 +96,17 @@ def generate():
     rt, bt1, bt2 = cfg['review_threshold'], cfg['block_v1'], cfg['block_v2']
 
     # ── آمار داده آموزش (به تفکیک منبع) ──
+    sel_path = MERGED / 'train_selected.csv'
     per_src, all_rows = {}, []
-    with open(MERGED / 'train_merged.csv', encoding='utf-8') as f:
+    reasons = Counter()
+    train_file = sel_path if sel_path.exists() else MERGED / 'train_merged.csv'
+    with open(train_file, encoding='utf-8') as f:
         r = csv.reader(f); next(r)
         for fl in r:
             if len(fl) >= 3:
                 per_src.setdefault(fl[2], []).append((fl[0], int(fl[1])))
+                if len(fl) >= 4:
+                    reasons[fl[3]] += 1
     train_stats = {'total': 0, 'pos': 0, 'sources': []}
     for src, rows in sorted(per_src.items(), key=lambda kv: -len(kv[1])):
         b = stat_block(rows)
@@ -176,6 +183,7 @@ def generate():
               'train': train_stats, 'tests': tests_meta, 'results': results,
               'mixed': mixed, 'sweep': sweep, 'features': feat_stats,
               'decisions_total': decisions_total, 'cleaning': CLEANING,
+              'selection': dict(reasons) if reasons else None,
               'gen_seconds': round(time.time() - t0, 1)}
     json.dump(report, open(HERE / 'report.json', 'w', encoding='utf-8'),
               ensure_ascii=False, indent=1)

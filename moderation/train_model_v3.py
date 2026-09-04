@@ -68,15 +68,24 @@ def boot_ci(y, pred, n=1000, seed=SEED):
 
 
 t0 = time.time()
-# ---------- بارگذاری ----------
-full_v2 = load(MERGED / 'train_merged.csv')
-full_v1 = load(HERE.parent / 'persian-abusive-words' / 'clean' / 'train_clean.csv')
+# ---------- بارگذاری (گزینش ارزش‌محور اگر موجود بود) ----------
+sel_path = MERGED / 'train_selected.csv'
+full_v2 = load(sel_path) if sel_path.exists() else load(MERGED / 'train_merged.csv')
+if sel_path.exists():
+    with open(sel_path, encoding='utf-8') as f:
+        r = csv.reader(f); next(r)
+        full_v1 = [(fl[0], int(fl[1])) for fl in r
+                   if len(fl) >= 3 and fl[2] == 'tweets' and fl[1].strip() in ('0', '1')]
+else:
+    full_v1 = load(HERE.parent / 'persian-abusive-words' / 'clean' / 'train_clean.csv')
 tests = {n: load(MERGED / f'test_{n}.csv') for n in TESTS if (MERGED / f'test_{n}.csv').exists()}
-print(f'v2-train={len(full_v2)} | v1-train={len(full_v1)} | tests={ {k: len(v) for k,v in tests.items()} }', flush=True)
+print(f'v2-train={len(full_v2)} (گزینش‌شده: {sel_path.exists()}) | v1-train={len(full_v1)} | tests={ {k: len(v) for k,v in tests.items()} }', flush=True)
 
 # ----------validation جداگانه (اصلاح ۲) ----------
-v2_tr, v2_val = train_test_split(full_v2, test_size=8000, stratify=[l for _, l in full_v2], random_state=SEED)
-v1_tr, v1_val = train_test_split(full_v1, test_size=3000, stratify=[l for _, l in full_v1], random_state=SEED)
+v2_tr, v2_val = train_test_split(full_v2, test_size=min(4000, max(1500, int(len(full_v2)*0.2))),
+                                 stratify=[l for _, l in full_v2], random_state=SEED)
+v1_tr, v1_val = train_test_split(full_v1, test_size=min(1500, max(600, int(len(full_v1)*0.2))),
+                                 stratify=[l for _, l in full_v1], random_state=SEED)
 print(f'validation: v2={len(v2_val)} | v1={len(v1_val)} (آستانه‌ها فقط این‌جا تنظیم می‌شوند)', flush=True)
 
 # ---------- آموزش مدل‌های آزمایشی روی train-minus-val ----------
@@ -96,21 +105,25 @@ REVIEW_T = float(thr[int(np.argmax(f1s[:-1]))])
 REVIEW_T = min(max(REVIEW_T, 0.3), 0.7)  # مهار در بازه معقول
 print(f'REVIEW threshold (از validation) = {REVIEW_T:.3f}', flush=True)
 
-# قاعده block: grid روی validation با قید precision ≥ 0.97 و حداقل ۳۰ نمونه
+# قاعده block: grid روی validation — هدف precision ≥ 0.97؛ اگر نشد، بهترین precision موجود
 best = None
-for t1 in (0.80, 0.85, 0.90, 0.95):
-    for t2 in (0.5, 0.6, 0.7, 0.8, 0.9):
+fallback = None
+for t1 in (0.80, 0.85, 0.90, 0.95, 0.97):
+    for t2 in (0.5, 0.6, 0.7, 0.8, 0.9, 0.95):
         b = (p1v >= t1) & (p2v >= t2)
         nb = int(b.sum())
-        if nb < 30:
+        if nb < 25:
             continue
         Pb = precision_score(yv, b, zero_division=0)
-        if Pb >= 0.97:
-            Rb = recall_score(yv, b)
-            if best is None or Rb > best[0]:
-                best = (Rb, t1, t2, Pb, nb)
-BLOCK_V1, BLOCK_V2 = (best[1], best[2]) if best else (0.90, 0.70)
-print(f'BLOCK rule (از validation): v1>={BLOCK_V1} و v2>={BLOCK_V2} | on-val P={best[3]:.3f} R={best[0]:.3f} n={best[4]}', flush=True)
+        Rb = recall_score(yv, b)
+        if fallback is None or Pb > fallback[3] or (Pb == fallback[3] and Rb > fallback[0]):
+            fallback = (Rb, t1, t2, Pb, nb)
+        if Pb >= 0.97 and (best is None or Rb > best[0]):
+            best = (Rb, t1, t2, Pb, nb)
+chosen = best or fallback
+BLOCK_V1, BLOCK_V2 = chosen[1], chosen[2]
+mode = 'P≥0.97' if best else f'best-available P={chosen[3]:.3f}'
+print(f'BLOCK rule (از validation): v1>={BLOCK_V1} و v2>={BLOCK_V2} | {mode} | R={chosen[0]:.3f} n={chosen[4]}', flush=True)
 
 # ---------- آموزش نهایی روی کل داده آموزش ----------
 m1_final = logreg(10.0).fit([t for t, _ in full_v1], [l for _, l in full_v1])

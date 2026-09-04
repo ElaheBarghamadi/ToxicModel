@@ -67,20 +67,22 @@ def load_metrics():
 
 
 def train_data_stats():
-    """آمار مجموعه آموزش ادغام‌شده (کش‌شده)."""
-    path = Path(settings.DATA_MERGED_DIR) / 'train_merged.csv'
-    if not path.exists():
-        return {'total': 0, 'sources': {}, 'pos_ratio': None}
-    import csv
-    from collections import Counter
-    src, labs = Counter(), Counter()
-    with open(path, encoding='utf-8') as f:
-        r = csv.reader(f)
-        next(r)
-        for fl in r:
-            if len(fl) >= 3:
-                src[fl[2]] += 1
-                labs[fl[1]] += 1
-    total = sum(src.values())
-    return {'total': total, 'sources': dict(src),
-            'pos_ratio': round(labs.get('1', 0) / total, 3) if total else None}
+    """آمار مجموعه آموزش (کش‌شده) — گزینش‌شده اگر موجود بود."""
+    for name in ('train_selected.csv', 'train_merged.csv'):
+        path = Path(settings.DATA_MERGED_DIR) / name
+        if not path.exists():
+            continue
+        import csv
+        from collections import Counter
+        src, labs = Counter(), Counter()
+        with open(path, encoding='utf-8') as f:
+            r = csv.reader(f)
+            next(r)
+            for fl in r:
+                if len(fl) >= 3:
+                    src[fl[2]] += 1
+                    labs[fl[1]] += 1
+        total = sum(src.values())
+        return {'total': total, 'sources': dict(src),
+                'pos_ratio': round(labs.get('1', 0) / total, 3) if total else None}
+    return {'total': 0, 'sources': {}, 'pos_ratio': None}

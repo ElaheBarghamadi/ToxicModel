@@ -1,11 +1,73 @@
 {
-  "version": "v3",
-  "trained_at": "2026-09-03 19:45",
-  "review_threshold": 0.4484,
-  "block_v1": 0.8,
-  "block_v2": 0.9,
+  "review_threshold": 0.5166,
+  "block_v1": 0.95,
+  "block_v2": 0.95,
   "selected_on": "validation (8k from train)",
   "algo": "LogisticRegression (both models)",
-  "train_size_v2": 109747,
-  "train_size_v1": 26616
+  "per_test": {
+    "tweets": {
+      "P": 0.676,
+      "R": 0.8,
+      "F1": 0.733,
+      "F1_ci95": [
+        0.702,
+        0.762
+      ],
+      "block_P": 1.0,
+      "block_R": 0.239,
+      "n": 4698
+    },
+    "naseza": {
+      "P": 0.802,
+      "R": 0.84,
+      "F1": 0.821,
+      "F1_ci95": [
+        0.791,
+        0.85
+      ],
+      "block_P": 1.0,
+      "block_R": 0.266,
+      "n": 857
+    },
+    "pars_offensive": {
+      "P": 0.65,
+      "R": 0.856,
+      "F1": 0.739,
+      "F1_ci95": [
+        0.71,
+        0.769
+      ],
+      "block_P": 0.983,
+      "block_R": 0.123,
+      "n": 1262
+    },
+    "phate": {
+      "P": 0.688,
+      "R": 0.7,
+      "F1": 0.694,
+      "F1_ci95": [
+        0.66,
+        0.727
+      ],
+      "block_P": 1.0,
+      "block_R": 0.069,
+      "n": 1058
+    },
+    "phicad": {
+      "P": 0.925,
+      "R": 0.837,
+      "F1": 0.879,
+      "F1_ci95": [
+        0.873,
+        0.885
+      ],
+      "block_P": 0.998,
+      "block_R": 0.092,
+      "n": 11642
+    }
+  },
+  "version": "v3",
+  "trained_at": "2026-09-04 11:26",
+  "train_size_v2": 19800,
+  "train_size_v1": 5000
 }

@@ -79,17 +79,25 @@ def pick_thresholds(m1, m2, Xval, yval):
     f1s = 2 * prec * rec / np.maximum(prec + rec, 1e-9)
     review_t = float(np.clip(thr[int(np.argmax(f1s[:-1]))], 0.3, 0.7))
     best = None
-    for t1 in (0.80, 0.85, 0.90, 0.95):
-        for t2 in (0.5, 0.6, 0.7, 0.8, 0.9):
+    fallback = None
+    for t1 in (0.80, 0.85, 0.90, 0.95, 0.97):
+        for t2 in (0.5, 0.6, 0.7, 0.8, 0.9, 0.95):
             b = (p1 >= t1) & (p2 >= t2)
-            if b.sum() < 30:
+            if b.sum() < 25:
                 continue
             Pb = precision_score(yval, b, zero_division=0)
+            Rb = recall_score(yval, b)
+            if fallback is None or Pb > fallback[3] or (Pb == fallback[3] and Rb > fallback[0]):
+                fallback = (Rb, t1, t2, Pb, int(b.sum()))
             if Pb >= 0.97:
-                Rb = recall_score(yval, b)
                 if best is None or Rb > best[0]:
                     best = (Rb, t1, t2)
-    t1, t2 = (best[1], best[2]) if best else (0.8, 0.9)
+    if best:
+        t1, t2 = best[1], best[2]
+    elif fallback:
+        t1, t2 = fallback[1], fallback[2]
+    else:
+        t1, t2 = 0.95, 0.9
     return review_t, t1, t2
 
 
@@ -97,8 +105,15 @@ def main():
     t0 = time.time()
     try:
         write_status('load', 5, 'خواندن داده‌ها...')
-        train2 = load_csv(MERGED / 'train_merged.csv')
-        train1 = load_csv(HERE.parent / 'persian-abusive-words' / 'clean' / 'train_clean.csv')
+        sel_path = MERGED / 'train_selected.csv'
+        train2 = load_csv(sel_path) if sel_path.exists() else load_csv(MERGED / 'train_merged.csv')
+        if sel_path.exists():
+            with open(sel_path, encoding='utf-8-sig') as f:
+                r = csv.reader(f); next(r)
+                train1 = [(fl[0], int(fl[1])) for fl in r
+                          if len(fl) >= 3 and fl[2] == 'tweets' and fl[1].strip() in ('0', '1')]
+        else:
+            train1 = load_csv(HERE.parent / 'persian-abusive-words' / 'clean' / 'train_clean.csv')
         tests = {n: load_csv(MERGED / f'test_{n}.csv') for n in TESTS
                  if (MERGED / f'test_{n}.csv').exists()}
         test_texts = {t for v in tests.values() for t, _ in v}
@@ -116,7 +131,8 @@ def main():
 
         # validation داخلی برای آستانه‌ها
         write_status('train', 20, 'آموزش مدل‌های آزمایشی برای تنظیم آستانه...')
-        tr2, val2 = train_test_split(train2, test_size=6000,
+        vsz = min(3000, max(1200, int(len(train2) * 0.18)))
+        tr2, val2 = train_test_split(train2, test_size=vsz,
                                      stratify=[l for _, l in train2], random_state=42)
         m1t = logreg(10.0).fit([t for t, _ in train1], [l for _, l in train1])
         m2t = logreg(4.0).fit([t for t, _ in tr2], [l for _, l in tr2])
