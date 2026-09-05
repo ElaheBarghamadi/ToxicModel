@@ -155,6 +155,26 @@
 <p style="font-size:11.5px;color:var(--mut);margin-top:8px">ردیف هایلایت‌شده = آستانه فعال سیستم (از validation انتخاب شده، نه از این جدول).</p>
 </div>
 
+{% if r.comparison %}
+<h2>⚔️ مقایسه الگوریتم‌ها (پروتکل یکسان: همان داده/تست‌ها/انتخاب آستانه از validation)</h2>
+<div class="card cv">
+<table>
+<tr><th>مدل</th><th>توییتر</th><th>تلگرام</th><th>ParsOff</th><th>PHate</th><th>PHICAD</th><th>کامنت سایت</th><th><b>کل</b></th><th>آستانه</th></tr>
+{% for d in r.comparison.rows %}
+<tr {% if d.is_dep %}style="background:rgba(96,165,250,.08)"{% endif %}>
+<td><b>{{ d.name }}</b></td>
+<td>{{ d.tweets }}</td><td>{{ d.naseza }}</td><td>{{ d.pars }}</td>
+<td>{{ d.phate }}</td><td>{{ d.phicad }}</td><td>{{ d.website }}</td>
+<td><b style="color:var(--acc)">{{ d.mixed }}</b></td>
+<td class="code">{{ d.thr }}</td>
+</tr>
+{% endfor %}
+</table>
+<p style="font-size:11.5px;color:var(--mut);margin-top:8px">
+حکم: مدل استقرار <b>LogisticRegression</b> می‌ماند (الزام تکلیف + عملکرد هم‌تراز) · بهترین جایگزین: <b>{{ r.comparison.best_alt_name }}</b> با F1 کلی {{ r.comparison.best_alt_mixed }} در مقابل {{ r.comparison.lr_mixed }} — تفاوت در مرز فاصله اطمینان است و برتری معنادار ندارد.</p>
+</div>
+{% endif %}
+
 <h2>🧬 مدل و ویژگی‌ها</h2>
 <div class="grid g4 cv">
   <div class="kpi"><b>{{ r.features.char_vocab }}</b><span>ویژگی کاراکتری (2-5گرم)</span></div>

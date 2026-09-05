@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-05 18:13",
+ "generated_at": "2026-09-05 18:37",
  "version": "v4-ir",
  "algo": "LogisticRegression (C=4.0)",
  "thresholds": {
@@ -371,5 +371,60 @@
   "border": 1000,
   "hard": 1000
  },
- "gen_seconds": 15.5
+ "gen_seconds": 15.3,
+ "comparison": {
+  "rows": [
+   {
+    "name": "LogisticRegression (استقرار)",
+    "is_dep": true,
+    "tweets": 0.734,
+    "naseza": 0.813,
+    "pars": 0.732,
+    "phate": 0.695,
+    "phicad": 0.89,
+    "website": 0.658,
+    "mixed": 0.855,
+    "thr": 0.4775
+   },
+   {
+    "name": "LinearSVC",
+    "is_dep": false,
+    "tweets": 0.74,
+    "naseza": 0.815,
+    "pars": 0.73,
+    "phate": 0.7,
+    "phicad": 0.888,
+    "website": 0.658,
+    "mixed": 0.855,
+    "thr": 0.4675
+   },
+   {
+    "name": "MultinomialNB",
+    "is_dep": false,
+    "tweets": 0.644,
+    "naseza": 0.805,
+    "pars": 0.706,
+    "phate": 0.683,
+    "phicad": 0.894,
+    "website": 0.683,
+    "mixed": 0.85,
+    "thr": 0.7218
+   },
+   {
+    "name": "آنسامبل رأی‌گیری نرم",
+    "is_dep": false,
+    "tweets": 0.726,
+    "naseza": 0.817,
+    "pars": 0.729,
+    "phate": 0.706,
+    "phicad": 0.898,
+    "website": 0.65,
+    "mixed": 0.862,
+    "thr": 0.4947
+   }
+  ],
+  "best_alt_name": "آنسامبل رأی‌گیری نرم",
+  "best_alt_mixed": 0.862,
+  "lr_mixed": 0.855
+ }
 }

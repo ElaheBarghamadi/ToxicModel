@@ -149,6 +149,32 @@ def generate():
               'decisions_total': dec_total, 'cleaning': CLEANING,
               'selection': dict(reasons) if reasons else None,
               'gen_seconds': round(time.time() - t0, 1)}
+    try:
+        met = json.load(open(HERE / 'metrics.json', encoding='utf-8'))
+        if 'v5_comparison' in met:
+            cmp_ = met['v5_comparison']
+            names = {'lr': 'LogisticRegression (استقرار)', 'svc': 'LinearSVC',
+                     'nb': 'MultinomialNB', 'vote': 'آنسامبل رأی‌گیری نرم'}
+            rows_c = []
+            for k, d in cmp_['results'].items():
+                pt = d.get('per_test', {})
+                rows_c.append({
+                    'name': names.get(k, k), 'is_dep': k == 'lr',
+                    'tweets': pt.get('tweets', {}).get('F1', '—'),
+                    'naseza': pt.get('naseza', {}).get('F1', '—'),
+                    'pars': pt.get('pars_offensive', {}).get('F1', '—'),
+                    'phate': pt.get('phate', {}).get('F1', '—'),
+                    'phicad': pt.get('phicad', {}).get('F1', '—'),
+                    'website': pt.get('website', {}).get('F1', '—'),
+                    'mixed': d.get('mixed', {}).get('F1', '—'), 'thr': d.get('thr')})
+            ba = cmp_.get('best_alt', '?')
+            report['comparison'] = {
+                'rows': rows_c,
+                'best_alt_name': names.get(ba, ba),
+                'best_alt_mixed': cmp_['results'][ba]['mixed']['F1'],
+                'lr_mixed': cmp_['results']['lr']['mixed']['F1']}
+    except Exception:
+        pass
     json.dump(report, open(HERE / 'report.json', 'w', encoding='utf-8'),
               ensure_ascii=False, indent=1)
     return report
