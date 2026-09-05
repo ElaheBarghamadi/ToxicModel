@@ -1,73 +1,13 @@
 {
-  "review_threshold": 0.5013,
-  "block_v1": 0.85,
-  "block_v2": 0.95,
-  "selected_on": "validation (8k from train)",
-  "algo": "LogisticRegression (both models)",
-  "per_test": {
-    "tweets": {
-      "P": 0.681,
-      "R": 0.798,
-      "F1": 0.735,
-      "F1_ci95": [
-        0.703,
-        0.765
-      ],
-      "block_P": 1.0,
-      "block_R": 0.264,
-      "n": 4698
-    },
-    "naseza": {
-      "P": 0.797,
-      "R": 0.838,
-      "F1": 0.817,
-      "F1_ci95": [
-        0.789,
-        0.847
-      ],
-      "block_P": 1.0,
-      "block_R": 0.295,
-      "n": 857
-    },
-    "pars_offensive": {
-      "P": 0.656,
-      "R": 0.862,
-      "F1": 0.745,
-      "F1_ci95": [
-        0.714,
-        0.776
-      ],
-      "block_P": 0.971,
-      "block_R": 0.147,
-      "n": 1262
-    },
-    "phate": {
-      "P": 0.673,
-      "R": 0.715,
-      "F1": 0.693,
-      "F1_ci95": [
-        0.66,
-        0.725
-      ],
-      "block_P": 1.0,
-      "block_R": 0.097,
-      "n": 1058
-    },
-    "phicad": {
-      "P": 0.92,
-      "R": 0.828,
-      "F1": 0.872,
-      "F1_ci95": [
-        0.865,
-        0.878
-      ],
-      "block_P": 0.997,
-      "block_R": 0.127,
-      "n": 11642
-    }
-  },
-  "version": "v3",
-  "trained_at": "2026-09-05 17:50",
-  "train_size_v2": 19774,
-  "train_size_v1": 4985
+  "version": "v4-ir",
+  "algo": "LogisticRegression (C=4.0)",
+  "block_threshold": 0.5087,
+  "selected_on": "validation 3.5k",
+  "val_f1": 0.8876,
+  "train_size": 19800,
+  "trained_at": "2026-09-05 18:00",
+  "decisions": [
+    "ok",
+    "block"
+  ]
 }

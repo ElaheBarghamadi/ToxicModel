@@ -14,8 +14,7 @@ from . import batch_utils, model_utils, train_utils
 
 DECISION_META = {
     'ok': ('✅ مجاز', 'انتشار فوری', 'ok'),
-    'review': ('🔍 بازبینی', 'صف بازبینی انسانی', 'review'),
-    'block': ('🚫 بلاک', 'مسدودسازی خودکار', 'block'),
+    'block': ('🚫 بلاک', 'نامناسب — مسدود', 'block'),
 }
 
 
@@ -88,7 +87,7 @@ def batch_test(request):
                     [(r['text'], r['label'], r['decision']) for r in labeled]) if labeled else None,
                 'text_col': text_col, 'label_col': label_col,
                 'decision_counts': {d: sum(1 for r in table if r['decision'] == d)
-                                    for d in ('ok', 'review', 'block')},
+                                    for d in ('ok', 'block')},
             })
             # ذخیره خروجی کامل برای دانلود
             with open(settings.MEDIA_DIR / 'batch_results.csv', 'w',

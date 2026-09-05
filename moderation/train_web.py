@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
-"""آموزش مجدد از طریق وب — نسخه ۳ (الزام لجستیک + ایمن‌سازی).
+"""آموزش مجدد از طریق وب — نسخه ۴ (تک‌مدل لجستیک، بدون بازبینی).
 
-ایمن‌سازی‌های جدید:
-  ۱) داده اضافه‌ی آپلودی در برابر «همه‌ی فایل‌های تست» dedup می‌شود (ضد نشت/آلودگی)
-  ۲) قبل از بازنویسی، مدل فعلی در models_archive/ بایگانی می‌شود (نگه‌داری ۳ نسخه)
-  ۳) سنجش سلامت: اگر F1 تست توییتی < 0.45 باشد آموزش «رد» می‌شود و مدل قدیمی می‌ماند
-  ۴) آستانه‌ها روی validation داخلی انتخاب می‌شوند و در model_config.json ذخیره می‌شوند
-
-مدل: LogisticRegression (هر دو) — مطابق الزام تکلیف.
+ایمن‌سازی‌ها:
+  ۱) داده اضافه آپلودی در برابر فایل‌های تست dedup می‌شود
+  ۲) قبل از بازنویسی، مدل در models_archive/ بایگانی می‌شود (۳ نسخه)
+  ۳) سنجش سلامت: F1 تست توییتی < 0.45 → رد و حفظ مدل قبلی
+  ۴) آستانه فقط از validation داخلی + تولید گزارش
 """
 import csv
 import json
@@ -35,6 +33,7 @@ ARCHIVE = HERE / 'models_archive'
 STATUS = HERE / 'train_status.json'
 TESTS = ['tweets', 'naseza', 'pars_offensive', 'phate', 'phicad']
 MIN_F1_TWEETS = 0.45
+BEST_C = 4.0
 
 
 def write_status(stage, pct, message, running=True, **kw):
@@ -58,47 +57,17 @@ def load_csv(path):
 def feats():
     char = Pipeline([('dual', FunctionTransformer(dual_form)),
                      ('tfidf', TfidfVectorizer(analyzer='char_wb', ngram_range=(2, 5),
-                                               min_df=4, max_features=250000,
+                                               min_df=3, max_features=200000,
                                                sublinear_tf=True, dtype=np.float32))])
     word = TfidfVectorizer(analyzer='word', token_pattern=r'(?u)\S+',
-                           ngram_range=(1, 2), min_df=4, sublinear_tf=True, dtype=np.float32)
+                           ngram_range=(1, 2), min_df=3, sublinear_tf=True, dtype=np.float32)
     return FeatureUnion([('char', char), ('word', word)])
 
 
-def logreg(C):
+def logreg(C=BEST_C):
     return Pipeline([('feats', feats()),
                      ('clf', LogisticRegression(C=C, class_weight='balanced',
                                                 max_iter=1000, random_state=42))])
-
-
-def pick_thresholds(m1, m2, Xval, yval):
-    """انتخاب آستانه‌ها فقط روی validation."""
-    p1 = m1.predict_proba(Xval)[:, 1]
-    p2 = m2.predict_proba(Xval)[:, 1]
-    prec, rec, thr = precision_recall_curve(yval, p2)
-    f1s = 2 * prec * rec / np.maximum(prec + rec, 1e-9)
-    review_t = float(np.clip(thr[int(np.argmax(f1s[:-1]))], 0.3, 0.7))
-    best = None
-    fallback = None
-    for t1 in (0.80, 0.85, 0.90, 0.95, 0.97):
-        for t2 in (0.5, 0.6, 0.7, 0.8, 0.9, 0.95):
-            b = (p1 >= t1) & (p2 >= t2)
-            if b.sum() < 25:
-                continue
-            Pb = precision_score(yval, b, zero_division=0)
-            Rb = recall_score(yval, b)
-            if fallback is None or Pb > fallback[3] or (Pb == fallback[3] and Rb > fallback[0]):
-                fallback = (Rb, t1, t2, Pb, int(b.sum()))
-            if Pb >= 0.97:
-                if best is None or Rb > best[0]:
-                    best = (Rb, t1, t2)
-    if best:
-        t1, t2 = best[1], best[2]
-    elif fallback:
-        t1, t2 = fallback[1], fallback[2]
-    else:
-        t1, t2 = 0.95, 0.9
-    return review_t, t1, t2
 
 
 def main():
@@ -106,66 +75,55 @@ def main():
     try:
         write_status('load', 5, 'خواندن داده‌ها...')
         sel_path = MERGED / 'train_selected.csv'
-        train2 = load_csv(sel_path) if sel_path.exists() else load_csv(MERGED / 'train_merged.csv')
-        if sel_path.exists():
-            with open(sel_path, encoding='utf-8-sig') as f:
-                r = csv.reader(f); next(r)
-                train1 = [(fl[0], int(fl[1])) for fl in r
-                          if len(fl) >= 3 and fl[2] == 'tweets' and fl[1].strip() in ('0', '1')]
-        else:
-            train1 = load_csv(HERE.parent / 'persian-abusive-words' / 'clean' / 'train_clean.csv')
+        train = load_csv(sel_path) if sel_path.exists() else load_csv(MERGED / 'train_merged.csv')
         tests = {n: load_csv(MERGED / f'test_{n}.csv') for n in TESTS
                  if (MERGED / f'test_{n}.csv').exists()}
         test_texts = {t for v in tests.values() for t, _ in v}
 
-        # (ایمن‌سازی ۱) حذف داده اضافی هم‌پوشان با تست‌ها
         extra_files = sorted(EXTRA.glob('*.csv'))
         extra_raw = []
         for p in extra_files:
             extra_raw += load_csv(p)
-        before = len(extra_raw)
         extra = [(t, l) for t, l in extra_raw if t not in test_texts]
-        dropped = before - len(extra)
-        train2 = train2 + extra
-        write_status('load', 15, f'{len(train2)} نمونه (اسپم‌گیری داده اضافی: {dropped} مورد حذف شد)')
+        dropped = len(extra_raw) - len(extra)
+        train = train + extra
+        write_status('load', 15, f'{len(train)} نمونه (پالایش نشت: {dropped} مورد حذف)')
 
-        # validation داخلی برای آستانه‌ها
-        write_status('train', 20, 'آموزش مدل‌های آزمایشی برای تنظیم آستانه...')
-        vsz = min(3000, max(1200, int(len(train2) * 0.18)))
-        tr2, val2 = train_test_split(train2, test_size=vsz,
-                                     stratify=[l for _, l in train2], random_state=42)
-        m1t = logreg(10.0).fit([t for t, _ in train1], [l for _, l in train1])
-        m2t = logreg(4.0).fit([t for t, _ in tr2], [l for _, l in tr2])
-        rt, bt1, bt2 = pick_thresholds(m1t, m2t, [t for t, _ in val2],
-                                       np.array([l for _, l in val2]))
-        write_status('train', 45, f'آستانه‌ها از validation: review={rt:.3f}، block=(v1≥{bt1}، v2≥{bt2})')
-        del m1t, m2t
+        write_status('train', 25, 'تنظیم آستانه روی validation...')
+        tr, val = train_test_split(train, test_size=3000,
+                                   stratify=[l for _, l in train], random_state=42)
+        mt = logreg().fit([t for t, _ in tr], [l for _, l in tr])
+        pv = mt.predict_proba([t for t, _ in val])[:, 1]
+        yv = np.array([l for _, l in val])
+        prec, rec, thr = precision_recall_curve(yv, pv)
+        f1s = 2 * prec * rec / np.maximum(prec + rec, 1e-9)
+        i = int(np.argmax(f1s[:-1]))
+        rt = float(np.clip(thr[i], 0.3, 0.7))
+        del mt
+        write_status('train', 45, f'آستانه بلاک از validation: {rt:.3f}')
 
-        write_status('train', 50, 'آموزش نهایی LogisticRegression...')
-        m1 = logreg(10.0).fit([t for t, _ in train1], [l for _, l in train1])
-        m2 = logreg(4.0).fit([t for t, _ in train2], [l for _, l in train2])
-        write_status('train', 80, 'آموزش تمام شد — ارزیابی سلامت...')
+        write_status('train', 55, 'آموزش نهایی LogisticRegression...')
+        model = logreg().fit([t for t, _ in train], [l for _, l in train])
+        write_status('train', 80, 'ارزیابی سلامت...')
 
-        # (ایمن‌سازی ۳) سنجش سلامت قبل از ذخیره
         xt = [t for t, _ in tests['tweets']]; yt = np.array([l for _, l in tests['tweets']])
-        f1_tw = f1_score(yt, (m2.predict_proba(xt)[:, 1] >= rt).astype(int), pos_label=1, zero_division=0)
+        f1_tw = f1_score(yt, (model.predict_proba(xt)[:, 1] >= rt).astype(int), zero_division=0)
         if f1_tw < MIN_F1_TWEETS:
             write_status('error', 0, f'رد شد: F1 توییتی {f1_tw:.3f} < {MIN_F1_TWEETS} — مدل قبلی حفظ شد',
                          running=False)
             return
 
         summary = {}
-        for i, (n, pairs) in enumerate(tests.items()):
+        for i2, (n, pairs) in enumerate(tests.items()):
             xx = [t for t, _ in pairs]; yy = np.array([l for _, l in pairs])
-            pred = (m2.predict_proba(xx)[:, 1] >= rt).astype(int)
+            pred = (model.predict_proba(xx)[:, 1] >= rt).astype(int)
             summary[n] = {'P': round(precision_score(yy, pred, pos_label=1, zero_division=0), 3),
                           'R': round(recall_score(yy, pred, pos_label=1, zero_division=0), 3),
                           'F1': round(f1_score(yy, pred, pos_label=1, zero_division=0), 3),
                           'n': len(pairs)}
-            write_status('eval', 80 + (i + 1) * 3, f'ارزیابی {n}: F1={summary[n]["F1"]}')
+            write_status('eval', 80 + i2 * 4, f'ارزیابی {n}: F1={summary[n]["F1"]}')
 
-        # (ایمن‌سازی ۲) بایگانی نسخه قبلی
-        write_status('save', 95, 'بایگانی نسخه قبلی و ذخیره...')
+        write_status('save', 92, 'بایگانی نسخه قبلی و ذخیره...')
         ARCHIVE.mkdir(exist_ok=True)
         ts = time.strftime('%Y%m%d_%H%M%S')
         if (HERE / 'model.joblib').exists():
@@ -173,19 +131,16 @@ def main():
             olds = sorted(ARCHIVE.glob('model_*.joblib'))
             for old in olds[:-3]:
                 old.unlink()
-        joblib.dump(m2, HERE / 'model.joblib')
-        joblib.dump(m1, HERE / 'model_v1.joblib')
-        cfg = {'version': f'web-{ts}', 'trained_at': time.strftime('%Y-%m-%d %H:%M'),
-               'review_threshold': round(rt, 4), 'block_v1': bt1, 'block_v2': bt2,
-               'selected_on': 'internal validation (6k)', 'algo': 'LogisticRegression',
-               'train_size_v2': len(train2), 'extra_rows_added': len(extra),
-               'extra_rows_dropped_leak': dropped}
+        joblib.dump(model, HERE / 'model.joblib')
+        cfg = {'version': f'web-{ts}', 'algo': f'LogisticRegression (C={BEST_C})',
+               'block_threshold': round(rt, 4), 'selected_on': 'internal validation (3k)',
+               'train_size': len(train), 'extra_added': len(extra),
+               'extra_dropped_leak': dropped, 'trained_at': time.strftime('%Y-%m-%d %H:%M'),
+               'decisions': ['ok', 'block']}
         json.dump(cfg, open(HERE / 'model_config.json', 'w', encoding='utf-8'),
                   ensure_ascii=False, indent=2)
-        # تولید گزارش کامل (report.json) — اگر شکست خورد، آموزش رد نمی‌شود
         try:
-            write_status('save', 97, 'تولید گزارش کامل...')
-            sys.path.insert(0, str(HERE))
+            write_status('save', 97, 'تولید گزارش...')
             from report_utils import generate as gen_report
             gen_report()
         except Exception:

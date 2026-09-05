@@ -1,40 +1,38 @@
-# 🛡️ ToxicModel — تشخیص کامنت نامناسب فارسی (v3)
+# 🛡️ ToxicModel — تشخیص کامنت نامناسب فارسی (v4)
 
 سیستم تشخیص محتوای نامناسب (فحش و توهین) در کامنت‌های فارسی + رابط وب جنگو.
 
-**English TL;DR:** Persian toxic-comment detection — dual **Logistic Regression**
-architecture (narrow high-precision profanity model + broad 5-source model),
-validation-derived thresholds, bootstrap CIs, versioned/rollback-safe retraining,
+**English TL;DR:** Persian toxic-comment detection — single **Logistic Regression**,
+Iranian-only data (5 sources), value-aware selection (19.8k), validation-derived
+threshold, binary decision (ok/block), bootstrap CIs, rollback-safe retraining,
 plus a Django app for single/batch testing (auto-scoring when labels exist).
 
-> **الزام تکلیف:** الگوریتم مدل = **رگرسیون لجستیک (Logistic Regression)** — هر دو مدل.
+> **الزام تکلیف:** الگوریتم مدل = **رگرسیون لجستیک (Logistic Regression)** — تک‌مدل.
+> معماری ساده: فقط «مجاز / بلاک» — بدون صف بازبینی.
 
 ---
 
-## نتایج نسخه ۳ (تست‌های دست‌نخورده، آستانه‌ها فقط از validation)
+## نتایج نسخه ۴ (شروع تازه: فقط داده ایرانی، تک‌مدل، بدون بازبینی)
 
-**داده آموزش: ۱۹٬۸۰۰ نمونه گزینش‌شده** (محدودیت زیر ۲۰ هزار — گزینش ارزش‌محور با `select_valuable.py`)
+**داده آموزش: ۱۹٬۸۰۰ نمونه گزینش‌شده از ۵ منبع ایرانی** (بدون فارسی-دری)
 
-| مجموعه آزمون | دامنه | F1 | فاصله اطمینان ۹۵٪ | بلاک (دقت/بازیابی) |
+| مجموعه آزمون | دامنه | F1 | دقت | بازیابی |
 |---|---|---|---|---|
-| توییتر | Persian Abusive Words | 0.733 | [0.702, 0.762] | 1.000 / 0.239 |
-| Naseza | تلگرام | 0.821 | [0.791, 0.850] | 1.000 / 0.266 |
-| ParsOffensive | کامنت اینستاگرام | 0.739 | [0.710, 0.769] | 0.983 / 0.123 |
-| PHate | توییتر | 0.694 | [0.660, 0.727] | 1.000 / 0.069 |
-| PHICAD | کامنت اینستاگرام | 0.879 | [0.873, 0.885] | 0.998 / 0.092 |
-| **همه با هم (۱۹٬۵۱۷)** | — | **0.849** | [0.843, 0.854] | — |
-
-> مقایسه با آموزش روی کل ۱۰۹٬۷۴۷ نمونه: F1 کلی ۰٫۸۹۸ → ۰٫۸۴۹ — هزینه محدودیتِ داده فقط ~۰٫۰۵ F1 است.
-> ترکیب گزینش (انتخاب‌شده با آزمایش روی validation ثابت): ۱٬۰۰۰ سخت + ۱٬۰۰۰ مرزی + ۱۷٬۸۰۰ طبقه‌بندی‌شده متناسب با سهمیه توییتر ۵٬۰۰۰. توجه: آموزش عمدتاً روی نمونه‌های «سخت»ِ برچسب‌نویزی، کالیبراسیون را خراب می‌کند (آزمایش شد و رد شد).
+| توییتر | Persian Abusive Words | 0.733 | 0.672 | 0.806 |
+| Naseza | تلگرام | 0.814 | 0.791 | 0.838 |
+| ParsOffensive | کامنت اینستاگرام | 0.735 | 0.643 | 0.858 |
+| PHate | توییتر | 0.702 | 0.682 | 0.724 |
+| PHICAD | کامنت اینستاگرام | 0.879 | 0.925 | 0.837 |
+| کامنت سایت (تولادی ۸۴تایی) | ارزیابی مستقل | 0.605 | 0.821 | 0.479 |
+| **همه با هم (~۱۹٬۶۰۰)** | — | **0.847** | — | — |
 
 ### معماری تصمیم
 
 ```
-p1 = مدل فحش سخت‌گیر (model_v1.joblib، LR C=10)   p2 = مدل پهن ۵-منبعی (model.joblib، LR C=4)
+p = LogisticRegression (C=4) · احتمال نامناسب‌بودن
 
-p1 ≥ 0.95  و  p2 ≥ 0.95  →  🚫 block   (انتخاب‌شده روی validation؛ دقت ۹۸-۱۰۰٪ روی تست‌ها)
-p2 ≥ 0.517               →  🔍 review
-در غیر این صورت           →  ✅ ok
+p ≥ 0.509  →  🚫 block (نامناسب)
+در غیر این صورت → ✅ ok (مجاز)
 ```
 
 آستانه‌ها در `model_config.json` ذخیره‌اند و از آنجا خوانده می‌شوند.
@@ -50,7 +48,7 @@ p2 ≥ 0.517               →  🔍 review
 
 ```
 moderation/
-├── model.joblib / model_v1.joblib   ← مدل‌های فعال (هر دو LogisticRegression)
+├── model.joblib                     ← مدل فعال (LogisticRegression)
 ├── model_config.json                ← آستانه‌ها + نسخه + متادیتا
 ├── moderate.py                      ← API استنتاج (ok/review/block)
 ├── mod_text.py                      ← نرمال‌سازی فارسی + ترفند ضد فحش حرف‌جدا
@@ -91,9 +89,11 @@ cd modsite && python manage.py runserver     # http://127.0.0.1:8000
 
 ```bash
 python moderation/clean_abusive_words.py   # پاکسازی پایه
-python moderation/build_merged.py          # ادغام ۵ منبع (۱۰۹,۷۴۷)
+python moderation/build_merged.py          # ادغام ۵ منبع ایرانی (۱۰۹,۷۴۷)
 python moderation/select_valuable.py       # گزینش ارزش‌محور → ۱۹,۸۰۰ نمونه
-python moderation/train_model_v3.py        # آموزش نهایی (LR×2 + validation + CI)
+python moderation/make_eval_set.py         # مجموعه ارزیابی مستقل (۸۴ کامنت سایت)
+python moderation/train_model_v4.py        # آموزش تک‌مدل + آستانه از validation
+python moderation/report_utils.py          # گزارش کامل → report.json
 ```
 
 ## محدودیت‌های شناخته‌شده (صادقانه)

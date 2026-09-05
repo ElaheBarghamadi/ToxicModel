@@ -39,13 +39,12 @@
     <h2 style="margin-top:0">توزیع تصمیم‌ها</h2>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <span class="badge b-ok" style="font-size:14px">✅ مجاز: {{ decision_counts.ok }}</span>
-      <span class="badge b-review" style="font-size:14px">🔍 بازبینی: {{ decision_counts.review }}</span>
-      <span class="badge b-block" style="font-size:14px">🚫 بلاک: {{ decision_counts.block }}</span>
+        <span class="badge b-block" style="font-size:14px">🚫 بلاک: {{ decision_counts.block }}</span>
     </div>
     {% if download_ready %}
     <div style="margin-top:14px"><a class="btn gray" href="/batch/download/batch_results.csv">⬇️ دانلود نتایج کامل (CSV)</a></div>
     {% endif %}
-    <p style="font-size:11.5px;color:var(--mut);margin-top:12px">«پیش‌بینی نامناسب» = تصمیم review یا block (آستانه {{ cfg.review_threshold }} از validation)</p>
+    <p style="font-size:11.5px;color:var(--mut);margin-top:12px">«پیش‌بینی نامناسب» = تصمیم block (آستانه {{ cfg.block_threshold }} از validation)</p>
   </div>
 </div>
 {% endif %}
@@ -75,7 +74,7 @@ document.getElementById('upForm').addEventListener('submit',()=>toast('فایل 
 (function(){
   const DATA=JSON.parse(document.getElementById('rows-data').textContent);
   const hasLabel={{ has_label|yesno:'true,false' }};
-  const META={ok:['✅ مجاز','b-ok'],review:['🔍 بازبینی','b-review'],block:['🚫 بلاک','b-block']};
+  const META={ok:['✅ مجاز','b-ok'],block:['🚫 بلاک','b-block']};
   function renderRow(r){
     const tr=document.createElement('tr');
     const td1=document.createElement('td');td1.style.maxWidth='430px';td1.textContent=r.text;tr.appendChild(td1);

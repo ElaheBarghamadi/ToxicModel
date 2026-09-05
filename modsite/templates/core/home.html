@@ -38,13 +38,13 @@
     <span class="pulse g" style="width:10px;height:10px"></span>
     <div>
       <b style="font-size:15px">مدل فعال: {{ r.version }}</b>
-      <div style="font-size:12px;color:var(--mut)">{{ r.algo }} ×2 (مدل پهن + مدل فحش) · تولید گزارش: {{ r.generated_at }}</div>
+      <div style="font-size:12px;color:var(--mut)">{{ r.algo }} · تک‌مدل · تولید گزارش: {{ r.generated_at }}</div>
     </div>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <span class="badge b-ok">بازبینی: v2 ≥ {{ r.thresholds.review }}</span>
-    <span class="badge b-block">بلاک: v1 ≥ {{ r.thresholds.block_v1 }} ∧ v2 ≥ {{ r.thresholds.block_v2 }}</span>
-    <span class="badge b-review">{{ r.features.model_mb }} + {{ r.features.model_v1_mb }} MB</span>
+    <span class="badge b-block">آستانه بلاک: p ≥ {{ r.thresholds.block }}</span>
+    <span class="badge b-ok">تصمیم: مجاز / بلاک</span>
+    <span class="badge b-review">{{ r.features.model_mb }} MB</span>
   </div>
 </div>
 </div>
@@ -130,10 +130,9 @@
     <span>تصمیم‌ها:</span>
     <div class="minibar" style="flex:1">
       <i style="width:{% widthratio res.decisions.ok 1 100 %}%;background:#34d399"></i>
-      <i style="width:{% widthratio res.decisions.review 1 100 %}%;background:#fbbf24"></i>
       <i style="width:{% widthratio res.decisions.block 1 100 %}%;background:#f87171"></i>
     </div>
-    <span class="code" style="font-size:10.5px">{{ res.decisions.ok }}/{{ res.decisions.review }}/{{ res.decisions.block }}</span>
+    <span class="code" style="font-size:10.5px">مجاز {{ res.decisions.ok }} / بلاک {{ res.decisions.block }}</span>
   </div>
 </div>
 {% endfor %}
@@ -179,7 +178,7 @@
 
 <h2>🧭 قاعده تصمیم و متریک‌ها (یعنی چه؟)</h2>
 <div class="card cv">
-<div class="exp"><b>✅ ok / 🔍 review / 🚫 block:</b> v2 زیر {{ r.thresholds.review }} → انتشار فوری؛ v2 ≥ {{ r.thresholds.review }} → صف بازبینی؛ v1 ≥ {{ r.thresholds.block_v1 }} <u>و</u> v2 ≥ {{ r.thresholds.block_v2 }} → بلاک خودکار (هر دو مدل مطمئن).<div class="use">بلاک فقط وقتی رخ می‌دهد که خطایش تقریباً صفر باشد؛ موارد مبهم به انسان می‌رسد.</div></div>
+<div class="exp"><b>✅ مجاز / 🚫 بلاک:</b> احتمال نامناسب‌بودنِ مدل ≥ {{ r.thresholds.block }} → بلاک؛ در غیر این صورت انتشار فوری.<div class="use">تک‌مدل LogisticRegression — آستانه روی validation انتخاب شده (نه روی تست‌ها).</div></div>
 <div class="exp"><b>دقت (Precision):</b> از هر ۱۰۰ اتهامِ مدل، چند‌تا درست بود؟ — بالاتر = متهم‌کردن بی‌گناه کمتر.</div>
 <div class="exp"><b>بازیابی (Recall):</b> از هر ۱۰۰ مورد واقعاً نامناسب، چند تا پیدا شد؟ — بالاتر = فرار کمتر.</div>
 <div class="exp"><b>F1 و فاصله اطمینان (CI):</b> F1 میانگین هماهنگ دقت/بازیابی است؛ CI بازه‌ای است که مقدار واقعی با ۹۵٪ احتمال درون آن است — بازه پهن = برآورد کم‌اطمینان.</div>

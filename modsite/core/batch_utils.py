@@ -63,12 +63,12 @@ def parse_file(fileobj):
 
 
 def evaluate(rows_with_labels):
-    """محاسبه متریک‌ها؛ «پیش‌بینی مثبت» یعنی تصمیم review یا block."""
+    """محاسبه متریک‌ها؛ «پیش‌بینی مثبت» یعنی تصمیم block."""
     tp = fp = fn = tn = 0
-    decisions = {'ok': 0, 'review': 0, 'block': 0}
+    decisions = {'ok': 0, 'block': 0}
     for _, label, decision in rows_with_labels:
         decisions[decision] += 1
-        pred = 1 if decision in ('review', 'block') else 0
+        pred = 1 if decision == 'block' else 0
         if pred == 1 and label == 1:
             tp += 1
         elif pred == 1:
