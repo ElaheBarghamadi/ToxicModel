@@ -21,6 +21,28 @@ _DIGITS = re.compile(r'[0-9۰-۹٠-٩]+')
 _REPEATS = re.compile(r'(.)\1{2,}', re.S)   # «بخداااااا» → «بخداا»
 _WS = re.compile(r'\s+')
 
+# نقطه/خط‌اتصال بین حروف فارسی: «ک.ی.ر» یا «ک_ی_ر» → «کیر»
+_GLUE_IN_WORD = re.compile(r'(?<=[\u0600-\u06FF])[.\-_ـ\u200c]+(?=[\u0600-\u06FF])')
+
+# ── فینگلیش → فارسی (برای کشف فحش لاتین‌نویسی: «kire to in gheymat») ──
+_DIGRAPHS = [('sh', 'ش'), ('ch', 'چ'), ('zh', 'ژ'), ('kh', 'خ'), ('gh', 'غ'),
+             ('ph', 'ف'), ('th', 'ث'), ('aa', 'آ'), ('ee', 'ی'), ('oo', 'و')]
+_SINGLES = {'a': 'ا', 'b': 'ب', 'c': 'ک', 'd': 'د', 'e': 'ه', 'f': 'ف', 'g': 'گ',
+            'h': 'ه', 'i': 'ی', 'j': 'ج', 'k': 'ک', 'l': 'ل', 'm': 'م', 'n': 'ن',
+            'o': 'و', 'p': 'پ', 'q': 'ق', 'r': 'ر', 's': 'س', 't': 'ت', 'u': 'و',
+            'v': 'و', 'w': 'و', 'x': 'خ', 'y': 'ی', 'z': 'ز'}
+_LATIN_TOKEN = re.compile(r'[a-z]{2,}')
+
+
+def _translit(token: str) -> str:
+    out, i, n = [], 0, len(token)
+    while i < n:
+        two = token[i:i + 2]
+        if two in dict(_DIGRAPHS):
+            out.append(dict(_DIGRAPHS)[two]); i += 2; continue
+        out.append(_SINGLES.get(token[i], '')); i += 1
+    return ''.join(out)
+
 
 def normalize(text: str) -> str:
     t = str(text)
@@ -29,10 +51,15 @@ def normalize(text: str) -> str:
     t = t.translate(_CHAR_MAP)
     t = _DIACRITICS.sub('', t)
     t = _INVISIBLE.sub('', t)
+    t = _GLUE_IN_WORD.sub('', t)          # «ک.ی.ر» → «کیر»
     t = t.lower()
     t = _DIGITS.sub(' 0 ', t)
     t = _REPEATS.sub(r'\1\1', t)
     t = _WS.sub(' ', t).strip()
+    # فینگلیش: معادلِ حرف‌نویسی لاتین را به انتهای متن می‌چسبانیم
+    tr = _LATIN_TOKEN.sub(lambda m: _translit(m.group(0)), t)
+    if tr != t:
+        t = t + ' ' + tr
     return t
 
 

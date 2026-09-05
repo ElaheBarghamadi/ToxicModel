@@ -51,8 +51,7 @@ def score(rows, title):
 
 def main():
     cfg = json.load(open(HERE / 'model_config.json', encoding='utf-8'))
-    print(f'مدل فعال: {cfg.get("version")} | آستانه‌ها: review≥{cfg["review_threshold"]}, '
-          f'block=(v1≥{cfg["block_v1"]} ∧ v2≥{cfg["block_v2"]})')
+    print(f'مدل فعال: {cfg.get("version")} | آستانه بلاک: p ≥ {cfg.get("block_threshold")}')
 
     # ── A) کامنت‌های تولیدی سایت ──
     gen = load(ROOT / 'eval' / 'website_comments_test.csv')
@@ -76,9 +75,10 @@ def main():
         print(f'    [{cat}] واقعی={l} تصمیم={dec} p={p} | {t[:64]}')
     print(f'\n  سرعت: {len(gen)/dt:.0f} کامنت/ثانیه')
 
-    # ── B) کامنت‌های واقعی دری (دیده‌نشده) ──
-    dari = load(ROOT / 'data-merged' / 'test_farsi_dari.csv')
-    score(dari, 'B) کامنت‌های واقعی فارسی-دری (۲٬۴۹۹ نمونه، خارج از دامنه)')
+    # ── B) تست اضافی اگر فایل وجود دارد ──
+    extra = ROOT / 'data-merged' / 'test_farsi_dari.csv'
+    if extra.exists():
+        score(load(extra), 'B) کامنت‌های واقعی فارسی-دری (دیده‌نشده)')
 
 
 if __name__ == '__main__':
