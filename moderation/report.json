@@ -1,71 +1,71 @@
 {
- "generated_at": "2026-09-05 18:37",
+ "generated_at": "2026-09-06 10:01",
  "version": "v4-ir",
- "algo": "LogisticRegression (C=10.0)",
+ "algo": "LogisticRegression (C=4.0)",
  "thresholds": {
   "block": 0.4739
  },
  "train": {
-  "total": 19800,
-  "pos": 9900,
+  "total": 16000,
+  "pos": 7555,
   "sources": [
    {
-    "n": 12764,
-    "pos": 8230,
-    "neg": 4534,
-    "pos_pct": 64.5,
-    "avg_len": 55.1,
+    "n": 10128,
+    "pos": 6177,
+    "neg": 3951,
+    "pos_pct": 61.0,
+    "avg_len": 54.9,
     "med_len": 33,
-    "p90_len": 133,
+    "p90_len": 131,
     "name": "phicad",
     "fa": "اینستاگرام (PHICAD)"
    },
    {
-    "n": 3949,
-    "pos": 339,
-    "neg": 3610,
-    "pos_pct": 8.6,
-    "avg_len": 33.1,
+    "n": 3422,
+    "pos": 345,
+    "neg": 3077,
+    "pos_pct": 10.1,
+    "avg_len": 33.8,
     "med_len": 23,
-    "p90_len": 63,
+    "p90_len": 65,
     "name": "tweets",
     "fa": "توییتر"
    },
    {
-    "n": 1098,
-    "pos": 550,
-    "neg": 548,
-    "pos_pct": 50.1,
-    "avg_len": 171.4,
-    "med_len": 184,
+    "n": 913,
+    "pos": 369,
+    "neg": 544,
+    "pos_pct": 40.4,
+    "avg_len": 46.8,
+    "med_len": 33,
+    "p90_len": 98,
+    "name": "pars_offensive",
+    "fa": "اینستاگرام (ParsOffensive)"
+   },
+   {
+    "n": 826,
+    "pos": 358,
+    "neg": 468,
+    "pos_pct": 43.3,
+    "avg_len": 163.1,
+    "med_len": 169,
     "p90_len": 250,
     "name": "phate",
     "fa": "توییتر (PHate)"
    },
    {
-    "n": 1087,
-    "pos": 361,
-    "neg": 726,
-    "pos_pct": 33.2,
-    "avg_len": 49.1,
-    "med_len": 34,
+    "n": 711,
+    "pos": 306,
+    "neg": 405,
+    "pos_pct": 43.0,
+    "avg_len": 49.4,
+    "med_len": 37,
     "p90_len": 102,
-    "name": "pars_offensive",
-    "fa": "اینستاگرام (ParsOffensive)"
-   },
-   {
-    "n": 902,
-    "pos": 420,
-    "neg": 482,
-    "pos_pct": 46.6,
-    "avg_len": 48.5,
-    "med_len": 35,
-    "p90_len": 103,
     "name": "naseza",
     "fa": "تلگرام (ناسزا)"
    }
   ],
-  "pos_pct": 50.0
+  "pos_pct": 47.2
  },
  "tests": [
   {
@@ -367,64 +367,63 @@
   }
  ],
  "selection": {
-  "easy": 17400,
-  "border": 1200,
-  "hard": 1200
+  "border": 1600,
+  "quality": 14400
  },
- "gen_seconds": 15.3,
+ "gen_seconds": 14.8,
  "comparison": {
   "rows": [
    {
     "name": "LogisticRegression (استقرار)",
     "is_dep": true,
-    "tweets": 0.734,
+    "tweets": 0.713,
     "naseza": 0.813,
-    "pars": 0.732,
-    "phate": 0.695,
-    "phicad": 0.89,
-    "website": 0.658,
-    "mixed": 0.855,
-    "thr": 0.4775
+    "pars": 0.712,
+    "phate": 0.694,
+    "phicad": 0.9,
+    "website": 0.675,
+    "mixed": 0.86,
+    "thr": 0.4411
    },
    {
     "name": "LinearSVC",
     "is_dep": false,
-    "tweets": 0.74,
-    "naseza": 0.815,
-    "pars": 0.73,
-    "phate": 0.7,
-    "phicad": 0.888,
-    "website": 0.658,
-    "mixed": 0.855,
-    "thr": 0.4675
+    "tweets": 0.721,
+    "naseza": 0.816,
+    "pars": 0.716,
+    "phate": 0.696,
+    "phicad": 0.899,
+    "website": 0.617,
+    "mixed": 0.86,
+    "thr": 0.438
    },
    {
     "name": "MultinomialNB",
     "is_dep": false,
-    "tweets": 0.644,
-    "naseza": 0.805,
-    "pars": 0.706,
-    "phate": 0.683,
-    "phicad": 0.894,
-    "website": 0.683,
-    "mixed": 0.85,
-    "thr": 0.7218
+    "tweets": 0.619,
+    "naseza": 0.801,
+    "pars": 0.698,
+    "phate": 0.694,
+    "phicad": 0.901,
+    "website": 0.649,
+    "mixed": 0.853,
+    "thr": 0.7354
    },
    {
     "name": "آنسامبل رأی‌گیری نرم",
     "is_dep": false,
-    "tweets": 0.726,
-    "naseza": 0.817,
-    "pars": 0.729,
-    "phate": 0.706,
-    "phicad": 0.898,
-    "website": 0.65,
-    "mixed": 0.862,
-    "thr": 0.4947
+    "tweets": 0.716,
+    "naseza": 0.824,
+    "pars": 0.717,
+    "phate": 0.698,
+    "phicad": 0.903,
+    "website": 0.634,
+    "mixed": 0.864,
+    "thr": 0.496
    }
   ],
   "best_alt_name": "آنسامبل رأی‌گیری نرم",
-  "best_alt_mixed": 0.862,
-  "lr_mixed": 0.855
+  "best_alt_mixed": 0.864,
+  "lr_mixed": 0.86
  }
 }
