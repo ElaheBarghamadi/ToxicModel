@@ -29,3 +29,7 @@ candidates/phicad/PHICAD-part{1,2}.csv
 - اسکریپت: `moderation/harvest_youtube_comments.py` — جستجوی ویدیو با yt-dlp (ytsearch) + کامنت با سرورهای واسط.
 - سرورهای سالم کامنت: `iv.catgirl.cloud/api/v1/comments/{id}` (Invidious) و `pipedapi.ducks.party/comments/{id}` (Piped). f5.si و بقیه Anubis/challenge دارند. ردیت/آپارات/خبری از سرور این محیط فیلترند (fetch_page برای ایرانی‌ها باز است ولی کامنت‌های تابناک/انتخاب AJAX است و در HTML نیست).
 - خروجی فعلی: `data-website/collected_youtube_comments.csv` — ۵۲۱ کامنت یکتا از ۲۳ ویدیو (دربی/تیم ملی/دلار/سریال/سفر/خودرو).
+
+## پاک‌سازی شهریور ۱۴۰۵
+- فایل‌های خام منابع (candidates/ و persian-abusive-words/) از ورک‌اسپیس حذف شدند — لینک‌ها همین‌جاست؛ برای بازسازی، دوباره دانلود کن.
+- بکاپ‌های train_selected_v1/v2/cand و فایل‌های میانی برداشت/لیبل حذف شد؛ فقط real_gold_all.csv (۹۴۹ طلایی) نگه داشته شد.

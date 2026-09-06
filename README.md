@@ -101,7 +101,7 @@ cd modsite && python manage.py runserver     # http://127.0.0.1:8000
 ```bash
 python moderation/clean_abusive_words.py   # پاکسازی پایه
 python moderation/build_merged.py          # ادغام ۵ منبع ایرانی (۱۰۹,۷۴۷)
-python moderation/select_valuable.py       # گزینش ارزش‌محور → ۱۹,۸۰۰ نمونه
+python moderation/select_valuable_v3.py    # گزینش کیفیت‌محور → ۱۶,۰۰۰ نمونه تاییدشده
 python moderation/make_eval_set.py         # مجموعه ارزیابی مستقل (۸۴ کامنت سایت)
 python moderation/train_model_v4.py        # آموزش تک‌مدل + آستانه از validation
 python moderation/report_utils.py          # گزارش کامل → report.json
