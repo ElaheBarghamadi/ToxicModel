@@ -3,7 +3,7 @@
 سیستم تشخیص محتوای نامناسب (فحش و توهین) در کامنت‌های فارسی + رابط وب جنگو.
 
 **English TL;DR:** Persian toxic-comment detection — single **Logistic Regression**,
-Iranian-only data (5 sources), value-aware selection (19.8k), validation-derived
+Iranian-only data (5 sources), value-aware selection (16k), validation-derived
 threshold, binary decision (ok/block), bootstrap CIs, rollback-safe retraining,
 plus a Django app for single/batch testing (auto-scoring when labels exist).
 
@@ -14,7 +14,7 @@ plus a Django app for single/batch testing (auto-scoring when labels exist).
 
 ## نتایج نسخه ۴ (شروع تازه: فقط داده ایرانی، تک‌مدل، بدون بازبینی)
 
-**داده آموزش: ۱۹٬۸۰۰ نمونه گزینش‌شده از ۵ منبع ایرانی** (بدون فارسی-دری)
+**داده آموزش: ۱۶٬۰۰۰ نمونه گزینش‌شده از ۵ منبع ایرانی** (بدون فارسی-دری)
 
 | مجموعه آزمون | دامنه | F1 | دقت | بازیابی |
 |---|---|---|---|---|
@@ -119,3 +119,10 @@ python moderation/report_utils.py          # گزارش کامل → report.json
 - هسته آزاد تجاری: **Apache-2.0** + **CC0** (Naseza)
 - ParsOffensive / PHate / PHICAD لایسنس صریح ندارند — برای استفاده تجاری مجوز بگیرید یا با داده خودتان بازآموزی کنید
 - کد این ریپو: MIT
+
+
+### 🧹 گزینش کیفیت‌محور v3 — «کم اما همه باکیفیت»
+- حذف ۴۸۶ برچسب‌مشکوک (Confident-Learning تقریبی) + حذف **همه‌ی ۱۱٬۲۳۴ نمونه‌ی تناقض‌دار** (OOF مخالف برچسب) → فقط نمونه‌های تاییدشده.
+- ۱۶٬۰۰۰ نمونه (۴۷٪ مثبت؛ ۱٬۶۰۰ مرزیِ درست + ۱۴٬۴۰۰ باکیفیت) — عملکرد هم‌تراز ۱۹٬۸۰۰ قبلی: mixed F1 **0.858** (رأی‌گیری آنسامبل 0.864).
+- آموزش اکنون روی متن **نرمال‌شده** انجام می‌شود (هم‌تراز با استنتاج) + سجاوندی جداکننده حذف می‌شود («اگر. غیرت.» → «اگر غیرت»).
+- **ارزیابی واقعی جدید**: ۵۲۱ کامنت واقعی یوتیوب فارسی (دستی لیبل‌شده، `eval/youtube_real_test.csv`) — F1 ≈ 0.34؛ سخت‌ترین بنچمارک تاکنون: نقد سیاسی سالم اشتباه بلاک می‌شود و توهین مؤدبانه/واژگان جدید از دست می‌رود. گام بعدی مشخص: برداشت بیشتر از فضای واقعی برای **آموزش**.

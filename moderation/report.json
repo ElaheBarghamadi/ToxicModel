@@ -1,7 +1,7 @@
 {
  "generated_at": "2026-09-05 18:37",
  "version": "v4-ir",
- "algo": "LogisticRegression (C=4.0)",
+ "algo": "LogisticRegression (C=10.0)",
  "thresholds": {
   "block": 0.4739
  },

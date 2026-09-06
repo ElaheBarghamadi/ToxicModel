@@ -23,6 +23,7 @@ _WS = re.compile(r'\s+')
 
 # نقطه/خط‌اتصال بین حروف فارسی: «ک.ی.ر» یا «ک_ی_ر» → «کیر»
 _GLUE_IN_WORD = re.compile(r'(?<=[\u0600-\u06FF])[.\-_ـ\u200c]+(?=[\u0600-\u06FF])')
+_PUNCT = re.compile(r'[.,،؛;:!؟?…()\[\]{}«»"\'\u2018\u2019\u201c\u201d\u0640]+')
 
 # ── فینگلیش → فارسی (برای کشف فحش لاتین‌نویسی: «kire to in gheymat») ──
 _DIGRAPHS = [('sh', 'ش'), ('ch', 'چ'), ('zh', 'ژ'), ('kh', 'خ'), ('gh', 'غ'),
@@ -52,6 +53,7 @@ def normalize(text: str) -> str:
     t = _DIACRITICS.sub('', t)
     t = _INVISIBLE.sub('', t)
     t = _GLUE_IN_WORD.sub('', t)          # «ک.ی.ر» → «کیر»
+    t = _PUNCT.sub(' ', t)                # «اگر. غیرت.» → «اگر غیرت» — سجاوندی جداکننده حذف شد
     t = t.lower()
     t = _DIGITS.sub(' 0 ', t)
     t = _REPEATS.sub(r'\1\1', t)

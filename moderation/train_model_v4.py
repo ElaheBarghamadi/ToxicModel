@@ -20,7 +20,7 @@ from sklearn.preprocessing import FunctionTransformer
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from mod_text import dual_form
+from mod_text import dual_form, normalize
 
 MERGED = HERE.parent / 'data-merged'
 TESTS = ['tweets', 'naseza', 'pars_offensive', 'phate', 'phicad']
@@ -33,7 +33,7 @@ def load(path):
         r = csv.reader(f); next(r)
         for fl in r:
             if len(fl) >= 2 and fl[1].strip() in ('0', '1'):
-                rows.append((fl[0], int(fl[1])))
+                rows.append((normalize(fl[0]), int(fl[1])))   # هم‌تراز با مسیر استنتاج
     return rows
 
 
