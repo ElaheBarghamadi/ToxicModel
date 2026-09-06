@@ -20,7 +20,7 @@ from mod_text import dual_form, normalize
 
 MERGED = HERE.parent / 'data-merged'
 EVAL = HERE.parent / 'eval'
-CORE_N = 14000
+CORE_N = 13000
 BORDER_FRAC = 0.10
 MILD_SRC = {'phicad', 'phate', 'naseza'}
 MILD_BOOST = 1.6
@@ -55,7 +55,8 @@ def main():
     X = [t for t, _, _ in rows3]; y = np.array([l for _, l, _ in rows3])
     src = [s for *_, s in rows3]
     pool = list(zip(X, y))
-    gold = read2(HERE.parent / 'data-website' / 'real_gold_round2.csv')
+    gold = read2(HERE.parent / 'data-website' / 'real_gold_all.csv')
+    GOLD_W = 3.0
     gold_texts = {t for t, _ in gold}
     print(f'خام: {len(pool)} | طلایی واقعی: {len(gold)}', flush=True)
 
@@ -104,7 +105,6 @@ def main():
 
     Xs = [normalize(t) for t, _, _, _ in rows]
     ys = np.array([l for _, l, _, _ in rows])
-    Xtr, Xva, ytr, yva = train_test_split(Xs, ys, test_size=3500, stratify=ys, random_state=SEED)
 
     tests = {'website84': read2(EVAL / 'website_comments_test.csv'),
              'youtube521': read2(EVAL / 'youtube_real_test.csv')}
@@ -113,12 +113,17 @@ def main():
         mixed += read2(MERGED / f'test_{name}.csv')
     tests['mixed5'] = mixed
 
+    w = np.array([GOLD_W if r[3] == 'real_gold' else 1.0 for r in rows])
+    idx = np.arange(len(rows))
+    itr, iva = train_test_split(idx, test_size=3500, stratify=ys, random_state=SEED)
+    Xtr = [Xs[i] for i in itr]; ytr = ys[itr]; wtr = w[itr]
+    Xva = [Xs[i] for i in iva]; yva = ys[iva]
     best = None
     for C in [4.0, 10.0]:
         m = Pipeline([('feats', feats()),
                       ('clf', LogisticRegression(C=C, class_weight='balanced',
                                                  max_iter=1000, random_state=SEED))])
-        m.fit(Xtr, ytr)
+        m.fit(Xtr, ytr, clf__sample_weight=wtr)
         pv = m.predict_proba(Xva)[:, 1]
         thr = max(np.linspace(0.2, 0.8, 121), key=lambda c: f1_score(yva, (pv >= c).astype(int)))
         row = {'C': C, 'thr': round(float(thr), 4)}
@@ -132,7 +137,7 @@ def main():
         if best is None or (row['youtube521'], row['mixed5']) > (best['youtube521'], best['mixed5']):
             best = row
 
-    if best['youtube521'] >= 0.335 and best['mixed5'] >= 0.845:
+    if best['youtube521'] >= 0.34 and best['mixed5'] >= 0.85:
         import shutil
         shutil.copy(MERGED / 'train_selected.csv', MERGED / 'train_selected_v3_16k.csv')
         with open(MERGED / 'train_selected.csv', 'w', encoding='utf-8', newline='') as f:
