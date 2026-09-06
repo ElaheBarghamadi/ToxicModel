@@ -1,11 +1,11 @@
 {
   "version": "v4-ir",
   "algo": "LogisticRegression (C=4.0)",
-  "block_threshold": 0.4775,
+  "block_threshold": 0.4739,
   "selected_on": "validation 3.5k",
-  "val_f1": 0.8838,
+  "val_f1": 0.8812,
   "train_size": 19800,
-  "trained_at": "2026-09-05 18:12",
+  "trained_at": "2026-09-06 07:57",
   "decisions": [
     "ok",
     "block"
