@@ -1,0 +1,403 @@
+{
+  "config": {
+    "random_state": 42,
+    "sklearn": "1.6.1",
+    "pandas": "2.2.3",
+    "numpy": "2.3.5"
+  },
+  "dataset": {
+    "rows_raw": 1749,
+    "rows_final": 1749,
+    "n_conflict_dropped": 0,
+    "n_duplicate_dropped": 0,
+    "approve": 1139,
+    "reject": 610,
+    "reject_ratio": 0.3488,
+    "by_source": {
+      "youtube-tutorials": 805,
+      "spammodel-sms-spam": 130,
+      "youtube-real-insults": 78,
+      "gen-question": 74,
+      "spammodel-similar-spam": 60,
+      "gen-criticism": 58,
+      "gen-mixed": 54,
+      "spammodel-phishing": 50,
+      "spammodel-extra-spam": 50,
+      "spammodel-formal-scam": 50,
+      "gen-thanks": 45,
+      "gen-ad-comment": 42,
+      "gen-numbers": 36,
+      "gen-docs": 35,
+      "gen-phone-words": 30,
+      "spammodel-finglish-ham": 26,
+      "gen-contentless": 25,
+      "gen-finglish-insult": 16,
+      "gen-evasion": 15,
+      "gen-fa-insult": 14,
+      "gen-ad-link": 12,
+      "spammodel-finglish-contact": 9,
+      "gen-emoji": 9,
+      "gen-spaced-ok": 8,
+      "gen-email-contact": 8,
+      "gen-en-spam": 6,
+      "gen-finglish-contact": 4
+    },
+    "unique_words_total": 5028,
+    "unique_words_generated": 1277,
+    "generated_templates": 358,
+    "max_sentence_repeat": 1
+  },
+  "signal_audit": {
+    "نشانهلینک": {
+      "reject_rate": 0.0639,
+      "approve_rate": 0.0228
+    },
+    "نشانهتلفن": {
+      "reject_rate": 0.0557,
+      "approve_rate": 0.0
+    },
+    "نشانهایمیل": {
+      "reject_rate": 0.0131,
+      "approve_rate": 0.0
+    },
+    "نشانهایموجی": {
+      "reject_rate": 0.0541,
+      "approve_rate": 0.2792
+    },
+    "کانال": {
+      "reject_rate": 0.0197,
+      "approve_rate": 0.0123
+    },
+    "فالو": {
+      "reject_rate": 0.0131,
+      "approve_rate": 0.0079
+    },
+    "آیدی": {
+      "reject_rate": 0.0049,
+      "approve_rate": 0.0026
+    },
+    "تلگرام": {
+      "reject_rate": 0.0148,
+      "approve_rate": 0.0026
+    },
+    "اینستا": {
+      "reject_rate": 0.0115,
+      "approve_rate": 0.0
+    },
+    "تخفیف": {
+      "reject_rate": 0.0508,
+      "approve_rate": 0.0009
+    }
+  },
+  "baselines": {
+    "majority": {
+      "f1_mean": 0.0,
+      "f1_std": 0.0,
+      "acc_mean": 0.6512,
+      "acc_std": 0.0004
+    },
+    "keywords": {
+      "f1_mean": 0.384,
+      "f1_std": 0.0481,
+      "acc_mean": 0.7095,
+      "acc_std": 0.0178
+    },
+    "length": {
+      "f1_mean": 0.0849,
+      "f1_std": 0.0119,
+      "acc_mean": 0.6552,
+      "acc_std": 0.0035
+    }
+  },
+  "best_baseline": "keywords",
+  "lr_beats_best_baseline_by": {
+    "f1_points": 50.78,
+    "acc_points": 22.13
+  },
+  "cv_5fold": {
+    "LogisticRegression": {
+      "f1_mean": 0.8918,
+      "f1_std": 0.0177,
+      "acc_mean": 0.9308,
+      "acc_std": 0.0114,
+      "note": "با پیش‌فرض (بدون class_weight)؛ نسخه‌ی tuned پایین‌تر"
+    },
+    "MultinomialNB": {
+      "f1_mean": 0.8381,
+      "f1_std": 0.0169,
+      "acc_mean": 0.9011,
+      "acc_std": 0.0101
+    },
+    "LinearSVC": {
+      "f1_mean": 0.9312,
+      "f1_std": 0.008,
+      "acc_mean": 0.9537,
+      "acc_std": 0.0053
+    },
+    "DecisionTree": {
+      "f1_mean": 0.7536,
+      "f1_std": 0.0271,
+      "acc_mean": 0.8302,
+      "acc_std": 0.0195
+    },
+    "LogisticRegression (tuned)": {
+      "f1_mean": 0.9304,
+      "f1_std": 0.0128,
+      "acc_mean": 0.9525,
+      "acc_std": 0.009
+    }
+  },
+  "lr_best_params": {
+    "C": 4,
+    "class_weight": "balanced"
+  },
+  "test": {
+    "n": 350,
+    "accuracy": 0.9571,
+    "precision": 0.9652,
+    "recall": 0.9098,
+    "f1": 0.9367,
+    "confusion_matrix": {
+      "tn": 224,
+      "fp": 4,
+      "fn": 11,
+      "tp": 111
+    },
+    "reject_precision": 0.9652,
+    "classification_report": "              precision    recall  f1-score   support\n\n     approve       0.95      0.98      0.97       228\n      reject       0.97      0.91      0.94       122\n\n    accuracy                           0.96       350\n   macro avg       0.96      0.95      0.95       350\nweighted avg       0.96      0.96      0.96       350\n"
+  },
+  "per_source_test_accuracy": {
+    "gen-ad-comment": 0.8,
+    "gen-criticism": 1.0,
+    "gen-finglish-insult": 0.7143,
+    "gen-mixed": 1.0,
+    "gen-numbers": 1.0,
+    "gen-phone-words": 1.0,
+    "gen-question": 0.9,
+    "gen-thanks": 1.0,
+    "spammodel-extra-spam": 1.0,
+    "spammodel-finglish-ham": 0.8333,
+    "spammodel-formal-scam": 1.0,
+    "spammodel-phishing": 1.0,
+    "spammodel-similar-spam": 1.0,
+    "spammodel-sms-spam": 1.0,
+    "youtube-real-insults": 0.7143,
+    "youtube-tutorials": 0.9936
+  },
+  "thresholds": {
+    "t_high": 0.6464,
+    "t_low": 0.2707,
+    "auto_reject_precision_oof": 0.9706,
+    "auto_approve_precision_oof": 0.9705,
+    "review_pct_oof": 0.1272,
+    "coverage_auto_reject_oof": 0.2916,
+    "coverage_auto_approve_oof": 0.5811,
+    "auto_reject_precision_test": 0.99,
+    "auto_approve_precision_test": 0.995,
+    "review_pct_test": 0.1429,
+    "policy": {
+      "t_high_rule": "کوچک‌ترین آستانه با دقت رد ≥ 97% در OOF",
+      "t_low_rule": "بزرگ‌ترین آستانه با دقت تایید ≥ 97% در OOF"
+    }
+  },
+  "confidence_test": {
+    "min": 0.0007,
+    "max": 0.9965,
+    "mean": 0.3592,
+    "decisive_pct": 0.6114,
+    "histogram": {
+      "0.0-0.1": 149,
+      "0.1-0.2": 40,
+      "0.2-0.3": 15,
+      "0.3-0.4": 16,
+      "0.4-0.5": 15,
+      "0.5-0.6": 12,
+      "0.6-0.7": 8,
+      "0.7-0.8": 13,
+      "0.8-0.9": 17,
+      "0.9-1.0": 65
+    }
+  },
+  "top20_features": {
+    "reject": [
+      "word__ما",
+      "word__نشانهتلفن",
+      "word__نشانهایموجی تنهاایموجی",
+      "word__تنهاایموجی",
+      "word__بیمحتوامتن",
+      "word__نشانهایموجی نشانهایموجی",
+      "word__سلام سلام",
+      "char__ما",
+      "word__بیا",
+      "char__؟؟",
+      "word__bi",
+      "char__ ما",
+      "char__ل ",
+      "word__حالا",
+      "char__بی",
+      "char__؟؟؟",
+      "word__این آدم",
+      "word__نیستی",
+      "word__نشانهایمیل",
+      "char__. "
+    ],
+    "approve": [
+      "word__عالی",
+      "word__ممنون",
+      "word__من",
+      "word__کردم",
+      "word__بود",
+      "word__دوره",
+      "word__چرا",
+      "word__آموزش",
+      "word__konam",
+      "word__بسیار",
+      "char__؟ ",
+      "word__که",
+      "word__یه",
+      "char__م ",
+      "word__ارور",
+      "word__میشه",
+      "word__رو",
+      "word__تشکر",
+      "word__واقعا",
+      "char__تون"
+    ]
+  },
+  "holdout": {
+    "by_level": {
+      "easy": {
+        "n": 12,
+        "accuracy": 0.9167,
+        "f1": 0.8571
+      },
+      "hard": {
+        "n": 14,
+        "accuracy": 1.0,
+        "f1": 1.0
+      },
+      "medium": {
+        "n": 14,
+        "accuracy": 1.0,
+        "f1": 1.0
+      }
+    },
+    "overall_accuracy": 0.975,
+    "auto_reject_precision": 1.0,
+    "auto_approve_precision": 1.0,
+    "review_pct": 0.05,
+    "zone_action_errors": 0,
+    "errors": [
+      {
+        "text": "تو چقدری بی‌فهم که اینجوری آموزش میدی؟ برو بچسب جایی دیگه",
+        "level": "easy",
+        "true": 1,
+        "pred": 0,
+        "p": 0.3631,
+        "decision": "review"
+      }
+    ]
+  },
+  "test_errors": [
+    {
+      "norm_text": "نشانهایموجی همتون اسکولید ، ینی الان مشکل شما اینه ک چرا شورای نمیدونم رقابت و سازمان مربوطه نامه نز",
+      "true": 1,
+      "pred": 0,
+      "p": 0.1759
+    },
+    {
+      "norm_text": "آره دقیقا این یه کار کاملا خایمالی بود",
+      "true": 1,
+      "pred": 0,
+      "p": 0.2835
+    },
+    {
+      "norm_text": "لینک فعالسازی حساب اومد ولی باز نمیشه",
+      "true": 0,
+      "pred": 1,
+      "p": 0.7047
+    },
+    {
+      "norm_text": "فالوک نید و لایک یادتون نره",
+      "true": 1,
+      "pred": 0,
+      "p": 0.3524
+    },
+    {
+      "norm_text": "برو دنبال پیتزا فروشیت که فحش نخورى",
+      "true": 1,
+      "pred": 0,
+      "p": 0.3883
+    },
+    {
+      "norm_text": "به عنوان یک جنگو کار میگم اگه پروژه کوچیکه بجای فلسک برید فست ای پی آی یاد بگیرید بهتره",
+      "true": 0,
+      "pred": 1,
+      "p": 0.5902
+    },
+    {
+      "norm_text": "Baba bi kheyal, dorost mishe",
+      "true": 0,
+      "pred": 1,
+      "p": 0.5894
+    },
+    {
+      "norm_text": "گوه زیادی خورده ولش کنید دلی بوده",
+      "true": 1,
+      "pred": 0,
+      "p": 0.4173
+    },
+    {
+      "norm_text": "سایت خوبی دارید، فقط سرچش ضعیفه",
+      "true": 0,
+      "pred": 1,
+      "p": 0.5723
+    },
+    {
+      "norm_text": "qwerty",
+      "true": 1,
+      "pred": 0,
+      "p": 0.4373
+    },
+    {
+      "norm_text": "ممنون از توضیحات. راستی دوستانی که کنکور ارشد میدن، جزوههای ما کمکشون میکنه",
+      "true": 1,
+      "pred": 0,
+      "p": 0.4385
+    },
+    {
+      "norm_text": "divune? in chi bood daghighan",
+      "true": 1,
+      "pred": 0,
+      "p": 0.455
+    },
+    {
+      "norm_text": "فالو+ لایک فراموش نشه",
+      "true": 1,
+      "pred": 0,
+      "p": 0.4823
+    },
+    {
+      "norm_text": "to ke hichchi nemifahmi baba",
+      "true": 1,
+      "pred": 0,
+      "p": 0.4943
+    },
+    {
+      "norm_text": "خیلی خوب توضیح میدی، منم تو اینستاگرامم همینطوری آموزش میدم، بیا ببین",
+      "true": 1,
+      "pred": 0,
+      "p": 0.4979
+    }
+  ],
+  "deploy": {
+    "model_size_mb": 0.22,
+    "model_limit_mb": 20,
+    "avg_ms_per_comment": 0.322,
+    "time_limit_ms": 100,
+    "compress": 3,
+    "network_calls": 0,
+    "retrained_on_full_data": true,
+    "weird_inputs": "None/[]/\"\"/emoji-only/5000ch/<script> → review یا پیش‌بینی، بدون crash"
+  }
+}
