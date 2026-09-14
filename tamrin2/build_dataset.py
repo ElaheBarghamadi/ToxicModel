@@ -29,6 +29,17 @@ def load_csv(path):
 
 rows = []  # (text, label, source, origin_id)
 
+# ۰) داده‌ی مشترک استاد (comments_seed.csv) — اگر موجود باشد به‌صورت خودکار اضافه می‌شود
+seed_path = os.path.join(BASE, 'data', 'comments_seed.csv')
+if os.path.exists(seed_path):
+    n_seed = 0
+    for r in load_csv(seed_path):
+        rows.append((r['text'], int(r['label']), 'pycourse-seed', r.get('id', 'seed')))
+        n_seed += 1
+    print(f'comments_seed.csv استاد اضافه شد: {n_seed} ردیف (source=pycourse-seed)')
+else:
+    print('(comments_seed.csv استاد هنوز دریافت نشده — بدون آن ادامه می‌دهیم)')
+
 # ۱) کامنت‌های واقعی یوتیوب (آموزش برنامه‌نویسی)
 for r in load_csv(os.path.join(BASE, 'data', 'real_tutorials_labeled.csv')):
     rows.append((r['text'], int(r['label']), r['source'], r['id']))

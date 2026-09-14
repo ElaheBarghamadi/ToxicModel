@@ -218,6 +218,72 @@
       "0.9-1.0": 65
     }
   },
+  "calibration_test": {
+    "brier": 0.0424,
+    "ece": 0.0815,
+    "reliability_bins": [
+      {
+        "bin": "0.0-0.1",
+        "mean_p": 0.034,
+        "actual_reject": 0.0,
+        "n": 149
+      },
+      {
+        "bin": "0.1-0.2",
+        "mean_p": 0.145,
+        "actual_reject": 0.025,
+        "n": 40
+      },
+      {
+        "bin": "0.2-0.3",
+        "mean_p": 0.252,
+        "actual_reject": 0.067,
+        "n": 15
+      },
+      {
+        "bin": "0.3-0.4",
+        "mean_p": 0.339,
+        "actual_reject": 0.125,
+        "n": 16
+      },
+      {
+        "bin": "0.4-0.5",
+        "mean_p": 0.453,
+        "actual_reject": 0.467,
+        "n": 15
+      },
+      {
+        "bin": "0.5-0.6",
+        "mean_p": 0.555,
+        "actual_reject": 0.75,
+        "n": 12
+      },
+      {
+        "bin": "0.6-0.7",
+        "mean_p": 0.645,
+        "actual_reject": 1.0,
+        "n": 8
+      },
+      {
+        "bin": "0.7-0.8",
+        "mean_p": 0.747,
+        "actual_reject": 0.923,
+        "n": 13
+      },
+      {
+        "bin": "0.8-0.9",
+        "mean_p": 0.856,
+        "actual_reject": 1.0,
+        "n": 17
+      },
+      {
+        "bin": "0.9-1.0",
+        "mean_p": 0.965,
+        "actual_reject": 1.0,
+        "n": 65
+      }
+    ]
+  },
   "top20_features": {
     "reject": [
       "word__ما",
@@ -393,7 +459,7 @@
   "deploy": {
     "model_size_mb": 0.22,
     "model_limit_mb": 20,
-    "avg_ms_per_comment": 0.336,
+    "avg_ms_per_comment": 0.158,
     "time_limit_ms": 100,
     "compress": 3,
     "network_calls": 0,

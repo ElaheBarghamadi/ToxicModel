@@ -33,3 +33,10 @@ candidates/phicad/PHICAD-part{1,2}.csv
 ## پاک‌سازی شهریور ۱۴۰۵
 - فایل‌های خام منابع (candidates/ و persian-abusive-words/) از ورک‌اسپیس حذف شدند — لینک‌ها همین‌جاست؛ برای بازسازی، دوباره دانلود کن.
 - بکاپ‌های train_selected_v1/v2/cand و فایل‌های میانی برداشت/لیبل حذف شد؛ فقط real_gold_all.csv (۹۴۹ طلایی) نگه داشته شد.
+
+## تمرین ۲ — تعدیل کامنت pycourse.ir (سپتامبر ۲۰۲۵)
+- **کامنت‌های یوتیوب آموزش برنامه‌نویسی فارسی (۸۱۰، دست‌لیبل):** برداشت با `tamrin2/harvest_tamrin2.py` از APIهای عمومی `iv.catgirl.cloud/api/v1/comments/{id}` و `pipedapi.ducks.party/comments/{id}` → `tamrin2/data/real_tutorials_labeled.csv`
+- **SpamModel (ریپوی خودم):** github.com/ElaheBarghamadi/SpamModel — ۳۷۵ نمونه‌ی دستچینِ بازلیبل‌شده طبق قانون این تمرین (دعوت به تماس = رد) → `tamrin2/data/spammodel_curated.csv`
+- **توهین‌های واقعی یوتیوب (۷۸):** از `data-website/real_gold_all.csv` (برداشت قبلی خودم)
+- **تولیدی (۴۹۱، ۳۵۸ قالب):** `tamrin2/gen_data.py`
+- **comments_seed.csv استاد:** هنوز دریافت نشده — در `tamrin2/data/` قرار گیرد تا `build_dataset.py` خودکار ادغامش کند (source=pycourse-seed)

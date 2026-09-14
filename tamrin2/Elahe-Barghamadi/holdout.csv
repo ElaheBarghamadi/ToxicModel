@@ -1,41 +1,41 @@
-id,text,label,level,source
-hold-0001,سلام خسته نباشید، منتظر جلسه بعدی هستیم,0,easy,holdout-handwritten
-hold-0002,واقعا عالی تدریس می‌کنید، خیلی چیزها یاد گرفتم، ممنون,0,easy,holdout-handwritten
-hold-0003,ببخشید برای اجرای این کد باید پایتون چند نصب کنم؟,0,easy,holdout-handwritten
-hold-0004,خدا قوت، آموزش‌های دیتاساینس‌تون بی‌نظیره,0,easy,holdout-handwritten
-hold-0005,من تازه پایتون رو شروع کردم، این ویدیو خیلی کمکم کرد,0,easy,holdout-handwritten
-hold-0006,استاد لطفا یه ویدیو هم درباره دیکوریتورها بگذارید,0,easy,holdout-handwritten
-hold-0007,ممنون از آموزش رایگانی که گذاشتید، انشالله موفق باشید,0,easy,holdout-handwritten
-hold-0008,کدوم ادیتور رو پیشنهاد می‌کنید برای شروع؟ vs code یا pycharm؟,0,easy,holdout-handwritten
-hold-0009,برای خرید فالوور واقعی و ارزان به سایت ما سر بزنید، آدرس تو پروفایل,1,easy,holdout-handwritten
-hold-0010,تو چقدری بی‌فهم که اینجوری آموزش میدی؟ برو بچسب جایی دیگه,1,easy,holdout-handwritten
-hold-0011,telegram.me/python_shop دوره پایتون کامل با ۴۰ درصد تخفیف,1,easy,holdout-handwritten
-hold-0012,شماره من ۰۹۱۲۳۴۵۶۷۸۹ هست، هماهنگی تلفنی انجام میشه,1,easy,holdout-handwritten
-hold-0013,این فصل واقعا بی‌کیفیت بود، سرعتتون زیادیه، هیچی نفهمیدم، درس دادن اینجوری جواب نمیده,0,medium,holdout-handwritten
-hold-0014,ممنونم ازتون,0,medium,holdout-handwritten
-hold-0015,برای فهم بهتر دیکوریتورها این لینک خیلی کمکم کرد: docs.python.org/3/glossary.html,0,medium,holdout-handwritten
-hold-0016,سلام اقا این کدو زدم ولی ارور میده باید چیکار کنم لطفا راهنماییم کنید,0,medium,holdout-handwritten
-hold-0017,ببخشید اگه سوالم تکراریه، این حلقه for من چرا خروجی نمیده؟,0,medium,holdout-handwritten
-hold-0018,به نظرم ادیتورهای بهتری هم هست، ولی ممنون از زحمتتون,0,medium,holdout-handwritten
-hold-0019,مرسی، خیلی useful بود especially بخش lambda,0,medium,holdout-handwritten
-hold-0020,دمت گرمممم عالیییی بوددد,0,medium,holdout-handwritten
-hold-0021,دوره پولیه ولی ارزشش رو داره، فقط فایل تمرینش کمه,0,medium,holdout-handwritten
-hold-0022,دوستان کسی میخواد گوشی نو با قیمت استثنایی بخره بهم پیام بده، فقط امروز,1,medium,holdout-handwritten
-hold-0023,لطفا به کانال ما هم سر بزنید، آموزش برنامه‌نویسی رایگان داریم,1,medium,holdout-handwritten
-hold-0024,آیدی تلگرامم رو گذاشتم تو پروفایلم، هر کی سوال داشت بیاد پیوی پیام بده,1,medium,holdout-handwritten
-hold-0025,پیشنهاد ویژه: سي دي آموزشي اكسل با ۵۰٪ تخفيف، جهت سفارش تماس بگيريد,1,medium,holdout-handwritten
-hold-0026,you can earn 200 dollars daily from home، just message me on telegram,1,medium,holdout-handwritten
-hold-0027,hey guys my new channel is up، please subscribe and share it with your friends,1,hard,holdout-handwritten
-hold-0028,ف ا ل و کنید بچه ها، محتوای جدید هر روز اونجا منتشر میشه,1,hard,holdout-handwritten
-hold-0029,شماره‌م: صفر نه سه دو یک چهار پنج شش هفت هشت نه، وقت اداری زنگ بزنید,1,hard,holdout-handwritten
-hold-0030,دمت گرم داداش واقعا کمکم کردی. راستی اگه گوشی نو میخوای بیا اینستاگرامم، ارزون میذارم,1,hard,holdout-handwritten
-hold-0031,hey khar، you know nothing about python، go home,1,hard,holdout-handwritten
-hold-0032,آی دی تل گرامم: python_lover_92 بیا پیوی هم گپ بزنیم,1,hard,holdout-handwritten
-hold-0033,🤩🤩🤩🤩🤩,1,hard,holdout-handwritten
-hold-0034,تماس: ۰ ۹ ۱ ۲ ۳ ۴ ۵ ۶ ۷ ۸ ۹ ساعت کاری پاسخ میدم,1,hard,holdout-handwritten
-hold-0035,بی‌شرف هستی؟ پول بگیری و فایل رو ندی به بچه‌ها؟,1,hard,holdout-handwritten
-hold-0036,برای همکاری در فروش محصولات آرایشی سایت ما ثبت‌نام کنید، درآمد تضمینی,1,hard,holdout-handwritten
-hold-0037,ف ا ل و کردم از پست قبلی، منتظر پارت pytorch هستیم,0,hard,holdout-handwritten
-hold-0038,من جلسه سه و چهار رو دو بار دیدم ولی هنوز روی کلاس‌ها گیجم، یه مثال عملی‌تر میزنید؟,0,hard,holdout-handwritten
-hold-0039,عالی بود 🔥🔥 فقط یه سوال، بخش normalization رو خودتون نوشتید یا کتابخونه؟,0,hard,holdout-handwritten
-hold-0040,توی پروژه‌م این ارور رو گرفتم: TypeError unsupported operand — کل stack trace رو اینجا گذاشتم: gist.github.com/1234abcdef ببینید چیزی از دست ندادم؟,0,hard,holdout-handwritten
+id,text,label,level
+hold-0001,سلام خسته نباشید، منتظر جلسه بعدی هستیم,0,easy
+hold-0002,واقعا عالی تدریس می‌کنید، خیلی چیزها یاد گرفتم، ممنون,0,easy
+hold-0003,ببخشید برای اجرای این کد باید پایتون چند نصب کنم؟,0,easy
+hold-0004,خدا قوت، آموزش‌های دیتاساینس‌تون بی‌نظیره,0,easy
+hold-0005,من تازه پایتون رو شروع کردم، این ویدیو خیلی کمکم کرد,0,easy
+hold-0006,استاد لطفا یه ویدیو هم درباره دیکوریتورها بگذارید,0,easy
+hold-0007,ممنون از آموزش رایگانی که گذاشتید، انشالله موفق باشید,0,easy
+hold-0008,کدوم ادیتور رو پیشنهاد می‌کنید برای شروع؟ vs code یا pycharm؟,0,easy
+hold-0009,برای خرید فالوور واقعی و ارزان به سایت ما سر بزنید، آدرس تو پروفایل,1,easy
+hold-0010,تو چقدری بی‌فهم که اینجوری آموزش میدی؟ برو بچسب جایی دیگه,1,easy
+hold-0011,telegram.me/python_shop دوره پایتون کامل با ۴۰ درصد تخفیف,1,easy
+hold-0012,شماره من ۰۹۱۲۳۴۵۶۷۸۹ هست، هماهنگی تلفنی انجام میشه,1,easy
+hold-0013,این فصل واقعا بی‌کیفیت بود، سرعتتون زیادیه، هیچی نفهمیدم، درس دادن اینجوری جواب نمیده,0,medium
+hold-0014,ممنونم ازتون,0,medium
+hold-0015,برای فهم بهتر دیکوریتورها این لینک خیلی کمکم کرد: docs.python.org/3/glossary.html,0,medium
+hold-0016,سلام اقا این کدو زدم ولی ارور میده باید چیکار کنم لطفا راهنماییم کنید,0,medium
+hold-0017,ببخشید اگه سوالم تکراریه، این حلقه for من چرا خروجی نمیده؟,0,medium
+hold-0018,به نظرم ادیتورهای بهتری هم هست، ولی ممنون از زحمتتون,0,medium
+hold-0019,مرسی، خیلی useful بود especially بخش lambda,0,medium
+hold-0020,دمت گرمممم عالیییی بوددد,0,medium
+hold-0021,دوره پولیه ولی ارزشش رو داره، فقط فایل تمرینش کمه,0,medium
+hold-0022,دوستان کسی میخواد گوشی نو با قیمت استثنایی بخره بهم پیام بده، فقط امروز,1,medium
+hold-0023,لطفا به کانال ما هم سر بزنید، آموزش برنامه‌نویسی رایگان داریم,1,medium
+hold-0024,آیدی تلگرامم رو گذاشتم تو پروفایلم، هر کی سوال داشت بیاد پیوی پیام بده,1,medium
+hold-0025,پیشنهاد ویژه: سي دي آموزشي اكسل با ۵۰٪ تخفيف، جهت سفارش تماس بگيريد,1,medium
+hold-0026,you can earn 200 dollars daily from home، just message me on telegram,1,medium
+hold-0027,hey guys my new channel is up، please subscribe and share it with your friends,1,hard
+hold-0028,ف ا ل و کنید بچه ها، محتوای جدید هر روز اونجا منتشر میشه,1,hard
+hold-0029,شماره‌م: صفر نه سه دو یک چهار پنج شش هفت هشت نه، وقت اداری زنگ بزنید,1,hard
+hold-0030,دمت گرم داداش واقعا کمکم کردی. راستی اگه گوشی نو میخوای بیا اینستاگرامم، ارزون میذارم,1,hard
+hold-0031,hey khar، you know nothing about python، go home,1,hard
+hold-0032,آی دی تل گرامم: python_lover_92 بیا پیوی هم گپ بزنیم,1,hard
+hold-0033,🤩🤩🤩🤩🤩,1,hard
+hold-0034,تماس: ۰ ۹ ۱ ۲ ۳ ۴ ۵ ۶ ۷ ۸ ۹ ساعت کاری پاسخ میدم,1,hard
+hold-0035,بی‌شرف هستی؟ پول بگیری و فایل رو ندی به بچه‌ها؟,1,hard
+hold-0036,برای همکاری در فروش محصولات آرایشی سایت ما ثبت‌نام کنید، درآمد تضمینی,1,hard
+hold-0037,ف ا ل و کردم از پست قبلی، منتظر پارت pytorch هستیم,0,hard
+hold-0038,من جلسه سه و چهار رو دو بار دیدم ولی هنوز روی کلاس‌ها گیجم، یه مثال عملی‌تر میزنید؟,0,hard
+hold-0039,عالی بود 🔥🔥 فقط یه سوال، بخش normalization رو خودتون نوشتید یا کتابخونه؟,0,hard
+hold-0040,توی پروژه‌م این ارور رو گرفتم: TypeError unsupported operand — کل stack trace رو اینجا گذاشتم: gist.github.com/1234abcdef ببینید چیزی از دست ندادم؟,0,hard

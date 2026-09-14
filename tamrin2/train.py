@@ -286,6 +286,19 @@ confidence = {
 }
 print(f'\nاطمینان روی آزمون: بازه [{p_te.min():.2f}، {p_te.max():.2f}] · قاطع: {decisive:.1%}')
 
+# کالیبراسیون (نمره‌ی استاد: آیا احتمال‌ها معنی دارند؟)
+brier = float(np.mean((p_te - y_te) ** 2))
+ece, rel_bins = 0.0, []
+for _i in range(10):
+    _m = (p_te >= _i / 10) & (p_te < (_i + 1) / 10) if _i < 9 else (p_te >= 0.9)
+    if _m.sum() > 0:
+        _mp, _fr = float(p_te[_m].mean()), float(y_te[_m].mean())
+        ece += float(_m.sum()) / len(p_te) * abs(_mp - _fr)
+        rel_bins.append({'bin': f'{_i/10:.1f}-{(_i+1)/10:.1f}', 'mean_p': round(_mp, 3),
+                         'actual_reject': round(_fr, 3), 'n': int(_m.sum())})
+calibration = {'brier': round(brier, 4), 'ece': round(ece, 4), 'reliability_bins': rel_bins}
+print(f'کالیبراسیون: Brier={brier:.4f} · ECE={ece:.4f}')
+
 # ══════════════════════ ۷) ویژگی‌های برتر ══════════════════════
 feat_names = np.array(lr_final.named_steps['features'].get_feature_names_out())
 coefs = lr_final.named_steps['clf'].coef_[0]
@@ -401,6 +414,7 @@ metrics = {
         },
     },
     'confidence_test': confidence,
+    'calibration_test': calibration,
     'top20_features': {'reject': top_reject, 'approve': top_approve},
     'holdout': {'by_level': by_level, **holdout_zone, 'errors': errors},
     'test_errors': test_errors,
